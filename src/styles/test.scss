@@ -1,0 +1,135 @@
+.test-field {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(88, 87, 85);
+}
+
+////////////
+
+.shape {
+  height: minmax(45px, auto);
+  width: 300px;
+  border-radius: 25px;
+  border: none;
+  box-shadow: -2px -2px 2px 0px rgb(109, 108, 105),
+    2px 2px 2px 0px rgb(73, 72, 70), -1px -1px 1px 0px rgb(101, 109, 97),
+    1px 1px 1px 0px rgb(81, 80, 77);
+  background-color: rgb(88, 87, 85);
+  border: 1px solid rgb(99, 98, 95);
+
+  flex-wrap: wrap;
+  color: lightgray;
+  display: grid;
+  grid-template-columns: [arrow-s] 48px [arrow-e input-s] 1fr [input-e];
+  align-items: center;
+  justify-items: flex-start;
+  // padding-left: 25px;
+  font-size: 24px;
+  grid-column: bullet-s/item-e;
+  grid-row: item-t/item-b;
+}
+
+.shape input {
+  color: lightgray;
+  background-color: transparent;
+  width: 90%;
+  display: flex;
+  align-items: center;
+  justify-items: flex-start;
+  outline: none;
+  border: none;
+  font-size: 24px;
+  grid-column: input-s/input-e;
+}
+
+.shape .list-item-symbol {
+  justify-self: center;
+  align-self: center;
+  transition: all 0.1s ease-in-out;
+}
+
+.shape .list-item-symbol * {
+  color: lightgray;
+}
+
+.shape .arrow {
+  font-size: 30px;
+  margin-bottom: -1px;
+}
+.shape .circle {
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.shape .closed {
+  transform: none;
+}
+
+.shape .open {
+  transform: rotate(90deg);
+}
+
+// .diamond {
+//   width: 12px;
+//   height: 12px;
+//   background-color: lightgray;
+//   transform: rotate(45deg);
+//   grid-column: bullet-s/bullet-e;
+//   grid-row: item-t/item-b;
+//   justify-self: center;
+//   align-self: center;
+// }
+
+.container {
+  display: grid;
+  grid-template-columns: [bullet-s] 48px [bullet-e item-s] auto [item-e];
+  grid-template-rows: [item-t] minmax(45px, min-content) [item-b gap-t] 12px [gap-b subset-t] min-content [subset-b];
+  grid-column: item-s/item-e;
+  grid-row: subset-t/subset-b;
+  margin-top: 10px;
+  width: max-content;
+}
+
+.line {
+  width: 1px;
+  height: calc(100% - 20px);
+
+  // background-color: lightgray;
+  box-shadow: -2px -2px 2px 0px rgb(109, 108, 105),
+    2px 2px 2px 0px rgb(73, 72, 70), -1px -1px 1px 0px rgb(101, 109, 97),
+    1px 1px 1px 0px rgb(81, 80, 77);
+  justify-self: center;
+  align-self: center;
+
+  grid-row: subset-t/subset-b;
+  grid-column: bullet-s/bullet-e;
+}
+
+.angled-line {
+  width: 8px;
+  height: 8px;
+
+  grid-row: line-t/line-b;
+  border-bottom: 1px solid rgb(109, 108, 105);
+  border-right: 1px solid rgb(109, 108, 105);
+  box-shadow: 2px 2px 2px 0px rgb(73, 72, 70), 1px 1px 1px 0px rgb(81, 80, 77);
+
+  align-self: flex-start;
+  justify-self: center;
+
+  transform: rotate(45deg);
+  grid-column: bullet-s/bullet-e;
+  grid-row: gap-t/gap-b;
+}
+
+.item-rows {
+  height: min-content;
+
+  grid-column: item-s/item-e;
+  grid-row: subset-t/subset-b;
+}
