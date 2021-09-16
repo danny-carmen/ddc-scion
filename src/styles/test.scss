@@ -15,6 +15,10 @@
   width: 100%;
   overflow-y: scroll;
   overflow-x: scroll;
+  padding-right: 50vw;
+  padding-left: 50vw;
+  padding-top: 50vh;
+  padding-bottom: 50vh;
 }
 
 ////////////
@@ -40,6 +44,10 @@
   font-size: 24px;
   grid-column: bullet-s/item-e;
   grid-row: item-t/item-b;
+
+  &__focused {
+    border: 1px solid rgb(225, 225, 225);
+  }
 
   opacity: inherit;
 }
@@ -107,7 +115,15 @@
 
   opacity: inherit;
 }
-
+.line-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-row: subset-t/subset-b;
+  grid-column: bullet-s/bullet-e;
+  width: 100%;
+  height: 100%;
+}
 .line {
   width: 1px;
   height: calc(100% - 20px);
@@ -119,8 +135,8 @@
   justify-self: center;
   align-self: center;
 
-  grid-row: subset-t/subset-b;
-  grid-column: bullet-s/bullet-e;
+  // grid-row: subset-t/subset-b;
+  // grid-column: bullet-s/bullet-e;
 
   opacity: inherit;
 }

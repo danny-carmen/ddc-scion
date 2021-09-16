@@ -1,21 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  currentFocusItemId: 0,
+  newListItem: { isOpen: true, content: "", childrenIds: [] },
   nextId: 8,
   listItems: {
-    0: { isOpen: true, childCount: 7, content: "Item 0", childrenIds: [1, 2] },
-    1: { isOpen: true, childCount: 1, content: "Item 1", childrenIds: [3] },
+    0: {
+      isOpen: true,
+      isFocused: false,
+      content: "Item 0",
+      childrenIds: [1, 2],
+    },
+    1: { isOpen: true, isFocused: false, content: "Item 1", childrenIds: [3] },
     2: {
       isOpen: true,
-      childCount: 4,
+      isFocused: false,
       content: "Item 2",
       childrenIds: [4, 5, 6],
     },
-    3: { isOpen: true, childCount: 0, content: "Item 3", childrenIds: [] },
-    4: { isOpen: true, childCount: 0, content: "Item 4", childrenIds: [] },
-    5: { isOpen: true, childCount: 1, content: "Item 5", childrenIds: [7] },
-    6: { isOpen: true, childCount: 0, content: "Item 6", childrenIds: [] },
-    7: { isOpen: true, childCount: 0, content: "Item 7", childrenIds: [] },
+    3: { isOpen: true, isFocused: false, content: "Item 3", childrenIds: [] },
+    4: { isOpen: true, isFocused: false, content: "Item 4", childrenIds: [] },
+    5: { isOpen: true, isFocused: false, content: "Item 5", childrenIds: [7] },
+    6: { isOpen: true, isFocused: false, content: "Item 6", childrenIds: [] },
+    7: { isOpen: true, isFocused: false, content: "Item 7", childrenIds: [] },
   },
 };
 
@@ -74,6 +81,12 @@ export const listItemSlice = createSlice({
       state.listItems[action.payload.parentItemId].isOpen =
         action.payload.toggledValue;
     },
+
+    setFocusItem: (state, action) => {
+      state.listItems[state.currentFocusItemId].isFocused = false;
+      state.listItems[action.payload].isFocused = true;
+      state.currentFocusItemId = action.payload;
+    },
   },
 });
 
@@ -87,7 +100,12 @@ export const selectListItems = (state) => {
 //   return state.listItems.value;
 // };
 
-export const { addListItem, deleteListItem, modifyListItem, toggleOpen } =
-  listItemSlice.actions;
+export const {
+  addListItem,
+  deleteListItem,
+  modifyListItem,
+  toggleOpen,
+  setFocusItem,
+} = listItemSlice.actions;
 
 export default listItemSlice.reducer;

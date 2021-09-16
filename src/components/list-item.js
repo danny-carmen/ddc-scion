@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Children } from "react";
+import React, { useEffect, useState, Children, useRef } from "react";
 import { createSelector } from "reselect";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,25 +15,18 @@ import {
   selectListItems,
   selectCount,
   toggleOpen,
+  setFocusItem,
 } from "../features/list-item-slice";
 
-import { useRef } from "react";
+//if I really want to break up the rendering, I could create a component for the shape as well, which would only listen for certain items in the object
+//then the children could be a component as well, which would only listen for the childrenids array
+//the main component would only listen for the isOpen?
+//line would be a component as well, and it would trigger the onfocused event for the object, which the shape would then respond to
 
 const ListItem = (props, children) => {
   let dispatch = useDispatch();
 
-  //   const listObject = useSelector((state) => {
-  //     let list = state.listItems.find((listItem) => {
-  //       return listItem. === props.listItemId;
-  //     });
-  //     return list;
-  //   });
-  //     const fullState = useSelector()
-
-  //   const selectListItemsSelector = createSelector(
-  //     [selectListItems],
-  //     (state) => state.listItems
-  //   );
+  const shapeElement = useRef(null);
 
   const listObject = useSelector((state) => {
     return state.listItems.listItems[props.listItemId];
@@ -54,13 +47,26 @@ const ListItem = (props, children) => {
   //     return <ListItem key={idx} listItemId={childId} />;
   //   });
 
+  function handleFocusClick() {
+    dispatch(setFocusItem(props.listItemId));
+    console.log(shapeElement.current.offsetLeft);
+
+    //scroll to item
+  }
+
   useEffect(() => {
     console.log(`List Item ${props.listItemId} has loaded`);
+    console.log(shapeElement.current.offsetTop);
   });
 
   return (
     <div className="container">
-      <div className="shape">
+      <div
+        name="shape"
+        ref={shapeElement}
+        onClick={handleFocusClick}
+        className={listObject.isFocused ? "shape shape__focused" : "shape"}
+      >
         <div
           onClick={(e) => {
             dispatch(
@@ -104,7 +110,9 @@ const ListItem = (props, children) => {
         />
       </div>
 
-      <div className="line"></div>
+      <div className="line-wrapper" onClick={handleFocusClick}>
+        <div className="line"> </div>
+      </div>
       <div
         height={listObject.isOpen ? `${listObject.childCount * 67}px` : "0px"}
         className={
