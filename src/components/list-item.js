@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Children } from "react";
 import { createSelector } from "reselect";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,7 +19,7 @@ import {
 
 import { useRef } from "react";
 
-const ListItem = (props) => {
+const ListItem = (props, children) => {
   let dispatch = useDispatch();
 
   //   const listObject = useSelector((state) => {
@@ -105,7 +105,16 @@ const ListItem = (props) => {
       </div>
 
       <div className="line"></div>
-      <div className="item-rows">{childItems}</div>
+      <div
+        height={listObject.isOpen ? `${listObject.childCount * 67}px` : "0px"}
+        className={
+          listObject.isOpen
+            ? "item-rows item-rows__open"
+            : "item-rows item-rows__closed"
+        }
+      >
+        {childItems}
+      </div>
     </div>
   );
 };

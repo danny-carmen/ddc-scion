@@ -5,7 +5,9 @@ export default class Test extends Component {
   render() {
     return (
       <div className="test-field">
-        <ListItem listItemId={0} />
+        <div className="window">
+          <ListItem listItemId={0} />
+        </div>
       </div>
     );
   }

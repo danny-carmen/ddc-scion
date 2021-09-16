@@ -3,14 +3,19 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   nextId: 8,
   listItems: {
-    0: { isOpen: true, content: "Item 0", childrenIds: [1, 2] },
-    1: { isOpen: true, content: "Item 1", childrenIds: [3] },
-    2: { isOpen: true, content: "Item 2", childrenIds: [4, 5, 6] },
-    3: { isOpen: true, content: "Item 3", childrenIds: [] },
-    4: { isOpen: true, content: "Item 4", childrenIds: [] },
-    5: { isOpen: true, content: "Item 5", childrenIds: [7] },
-    6: { isOpen: true, content: "Item 6", childrenIds: [] },
-    7: { isOpen: true, content: "Item 7", childrenIds: [] },
+    0: { isOpen: true, childCount: 7, content: "Item 0", childrenIds: [1, 2] },
+    1: { isOpen: true, childCount: 1, content: "Item 1", childrenIds: [3] },
+    2: {
+      isOpen: true,
+      childCount: 4,
+      content: "Item 2",
+      childrenIds: [4, 5, 6],
+    },
+    3: { isOpen: true, childCount: 0, content: "Item 3", childrenIds: [] },
+    4: { isOpen: true, childCount: 0, content: "Item 4", childrenIds: [] },
+    5: { isOpen: true, childCount: 1, content: "Item 5", childrenIds: [7] },
+    6: { isOpen: true, childCount: 0, content: "Item 6", childrenIds: [] },
+    7: { isOpen: true, childCount: 0, content: "Item 7", childrenIds: [] },
   },
 };
 

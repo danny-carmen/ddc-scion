@@ -1,12 +1,20 @@
 .test-field {
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  justify-content: center;
-  align-items: center;
+  justify-content: left;
+  align-items: left;
   background-color: rgb(88, 87, 85);
+  padding-left: 20px;
+}
+
+.window {
+  height: 100%;
+  width: 100%;
+  overflow-y: scroll;
+  overflow-x: scroll;
 }
 
 ////////////
@@ -32,6 +40,8 @@
   font-size: 24px;
   grid-column: bullet-s/item-e;
   grid-row: item-t/item-b;
+
+  opacity: inherit;
 }
 
 .shape input {
@@ -51,6 +61,7 @@
   justify-self: center;
   align-self: center;
   transition: all 0.1s ease-in-out;
+  opacity: inherit;
 }
 
 .shape .list-item-symbol * {
@@ -93,6 +104,8 @@
   grid-row: subset-t/subset-b;
   margin-top: 10px;
   width: max-content;
+
+  opacity: inherit;
 }
 
 .line {
@@ -108,28 +121,38 @@
 
   grid-row: subset-t/subset-b;
   grid-column: bullet-s/bullet-e;
-}
 
-.angled-line {
-  width: 8px;
-  height: 8px;
-
-  grid-row: line-t/line-b;
-  border-bottom: 1px solid rgb(109, 108, 105);
-  border-right: 1px solid rgb(109, 108, 105);
-  box-shadow: 2px 2px 2px 0px rgb(73, 72, 70), 1px 1px 1px 0px rgb(81, 80, 77);
-
-  align-self: flex-start;
-  justify-self: center;
-
-  transform: rotate(45deg);
-  grid-column: bullet-s/bullet-e;
-  grid-row: gap-t/gap-b;
+  opacity: inherit;
 }
 
 .item-rows {
-  height: min-content;
-
   grid-column: item-s/item-e;
   grid-row: subset-t/subset-b;
+  opacity: inherit;
+  // transition: opacity 0.15s, height 0.15s 0.15s;
+
+  &__closed {
+    height: 0px;
+    opacity: 0;
+    transition: opacity 0.1s, height 0.1s 0.1s;
+  }
+
+  &__faded {
+  }
+
+  &__open {
+    height: min-content;
+    opacity: 1;
+
+    transition: opacity 0.1s, height 0.1s;
+  }
 }
+
+.item-rows > * {
+  opacity: inherit;
+  transition: inherit;
+}
+
+// .item-rows__closed > * {
+//   height: 0px;
+// }
