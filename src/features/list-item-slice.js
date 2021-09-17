@@ -57,14 +57,9 @@ export const listItemSlice = createSlice({
       // update backend
     },
 
-    modifyListItem: (state, action) => {
-      let newProperty = action.payload.newProperty;
-
-      state.listItems[action.payload.idToModify] = {
-        ...action.payload.listItem,
-        ...newProperty,
-      };
-      console.log({ ...action.payload.listItem, ...newProperty });
+    modifyListItemContent: (state, action) => {
+      state.listItems[action.payload.idToModify].content =
+        action.payload.content;
     },
 
     addListItem: (state, action) => {
@@ -103,7 +98,7 @@ export const selectListItems = (state) => {
 export const {
   addListItem,
   deleteListItem,
-  modifyListItem,
+  modifyListItemContent,
   toggleOpen,
   setFocusItem,
 } = listItemSlice.actions;

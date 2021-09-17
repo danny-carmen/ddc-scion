@@ -1,24 +1,42 @@
-.test-field {
+$dark-gray: rgb(88, 87, 85);
+
+body {
+  padding: 0px;
+  margin: 0px;
   height: 100vh;
   width: 100vw;
   display: flex;
-  flex-direction: column;
-  gap: 20px;
   justify-content: left;
-  align-items: left;
-  background-color: rgb(88, 87, 85);
-  padding-left: 20px;
+
+  align-items: flex-start;
+  padding-left: 100vw;
+  padding-top: 100vh;
+  padding-right: 100vw;
+  padding-bottom: 100vh;
+  background-color: $dark-gray;
+  overflow-y: scroll;
+  overflow-x: scroll;
+}
+
+.test-field {
+  height: 100%;
+  width: 100%;
+
+  // background-color: rgb(88, 87, 85);
 }
 
 .window {
   height: 100%;
   width: 100%;
-  overflow-y: scroll;
-  overflow-x: scroll;
-  padding-right: 50vw;
-  padding-left: 50vw;
-  padding-top: 50vh;
-  padding-bottom: 50vh;
+  display: flex;
+  justify-content: center;
+
+  align-items: center;
+  padding-left: 20vw;
+  padding-top: 60vh;
+  padding-right: 20vw;
+  padding-bottom: 60vh;
+  background-color: $dark-gray;
 }
 
 ////////////
@@ -106,12 +124,11 @@
 
 .container {
   display: grid;
-  grid-template-columns: [bullet-s] 48px [bullet-e item-s] auto [item-e];
+  grid-template-columns: [bullet-s] 48px [bullet-e item-s] 400px [item-e];
   grid-template-rows: [item-t] minmax(45px, min-content) [item-b gap-t] 12px [gap-b subset-t] min-content [subset-b];
   grid-column: item-s/item-e;
   grid-row: subset-t/subset-b;
   margin-top: 10px;
-  width: max-content;
 
   opacity: inherit;
 }
@@ -172,3 +189,23 @@
 // .item-rows__closed > * {
 //   height: 0px;
 // }
+
+.action-menu-wrapper {
+  display: flex;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  justify-content: center;
+  width: 100%;
+  height: 60px;
+  z-index: 1;
+}
+
+.action-menu {
+  button {
+    color: white;
+    width: 60px;
+    height: 60px;
+    background-color: $dark-gray;
+  }
+}

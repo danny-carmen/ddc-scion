@@ -1,17 +1,14 @@
 import React from "react";
 import "./styles/main.scss";
-import Test from "./components/pages/test";
-
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import ActionMenu from "./components/action-menu";
+import ListItem from "./components/list-item";
 
 function App() {
   return (
     <div className="App">
-      <Router>
-        <Switch>
-          <Route path="/test" component={Test} />
-        </Switch>
-      </Router>
+      <ActionMenu />
+
+      <ListItem listItemId={0} />
     </div>
   );
 }

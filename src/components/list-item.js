@@ -1,6 +1,7 @@
 import React, { useEffect, useState, Children, useRef } from "react";
-import { createSelector } from "reselect";
+
 import { useSelector, useDispatch } from "react-redux";
+import ListItemShape from "./list-item-shape";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTimes,
@@ -22,103 +23,65 @@ import {
 //then the children could be a component as well, which would only listen for the childrenids array
 //the main component would only listen for the isOpen?
 //line would be a component as well, and it would trigger the onfocused event for the object, which the shape would then respond to
+//might get screwy with a ref, but I'll give it a go
+//this way, updates to the content will not trigger an update to all children, only the
+//does listItem really need to be separate? It is kind of separate already, as it is the separate components
+//key is checking if the object deconstructon will work to avoid rerender
 
 const ListItem = (props, children) => {
   let dispatch = useDispatch();
 
   const shapeElement = useRef(null);
 
-  const listObject = useSelector((state) => {
-    return state.listItems.listItems[props.listItemId];
+  // const listObject = useSelector((state) => {
+  //   return state.listItems.listItems[props.listItemId];
+  // });
+
+  const isOpen = useSelector((state) => {
+    return state.listItems.listItems[props.listItemId].isOpen;
   });
 
-  if (props.listItemId === 3) {
-    console.log(listObject);
-  }
-  console.log("List Object: ", listObject);
+  const childrenIds = useSelector((state) => {
+    return state.listItems.listItems[props.listItemId].childrenIds;
+  });
 
-  //   console.log("This list Object: ", listObject[props.listItemId]);
-
-  const childItems = listObject.childrenIds.map((childId, idx) => {
+  const childItems = childrenIds.map((childId, idx) => {
     return <ListItem key={idx} listItemId={childId} />;
   });
 
-  //   const childItems = listObject.listItem.childrenIds.map((childId, idx) => {
-  //     return <ListItem key={idx} listItemId={childId} />;
-  //   });
-
-  function handleFocusClick() {
+  //potentially something here to change childItems if it is closed, so those aren't even considered to be rendered
+  // also set the height in a local state after rendering, then that could be used to hardcode the height in when it is closed?
+  function handleFocusClick(e) {
     dispatch(setFocusItem(props.listItemId));
-    console.log(shapeElement.current.offsetLeft);
+    window.scrollTo({
+      top: shapeElement.current.offsetTop - 150,
+      left: shapeElement.current.offsetLeft - window.innerWidth / 2 + 150,
+      behavior: "smooth",
+    });
+
+    // console.log(this.offsetTop, this.offsetLeft);
 
     //scroll to item
   }
 
   useEffect(() => {
-    console.log(`List Item ${props.listItemId} has loaded`);
-    console.log(shapeElement.current.offsetTop);
+    // console.log(`List Item ${props.listItemId} container has loaded`);
   });
 
   return (
     <div className="container">
-      <div
-        name="shape"
-        ref={shapeElement}
-        onClick={handleFocusClick}
-        className={listObject.isFocused ? "shape shape__focused" : "shape"}
-      >
-        <div
-          onClick={(e) => {
-            dispatch(
-              toggleOpen({
-                parentItemId: props.listItemId,
-                toggledValue: !listObject.isOpen,
-              })
-            );
-          }}
-          className={
-            listObject.isOpen
-              ? "list-item-symbol open"
-              : "list-item-symbol closed"
-          }
-        >
-          {listObject.childrenIds.length > 0 ? (
-            <FontAwesomeIcon className="arrow" icon={faCaretRight} />
-          ) : (
-            <FontAwesomeIcon className="circle" icon={faCircle} />
-          )}
-        </div>
-        <input
-          type="text"
-          name="content"
-          value={listObject.content}
-          onChange={(e) => {
-            dispatch(
-              modifyListItem({
-                idToModify: props.listItemId,
-                listItem: listObject,
-                newProperty: { [e.target.name]: e.target.value },
-              })
+      <ListItemShape
+        shapeElement={shapeElement}
+        listItemId={props.listItemId}
+        handleFocusClick={handleFocusClick}
+      />
 
-              //   addListItem({
-              //     parentItemId: props.listItemId,
-              //     newListItemKey: 8,
-              //     newListItemValue: { content: "Item 8", childrenIds: [] },
-              //   })
-            );
-          }}
-        />
-      </div>
-
-      <div className="line-wrapper" onClick={handleFocusClick}>
+      <div className="line-wrapper" onMouseDown={handleFocusClick}>
         <div className="line"> </div>
       </div>
       <div
-        height={listObject.isOpen ? `${listObject.childCount * 67}px` : "0px"}
         className={
-          listObject.isOpen
-            ? "item-rows item-rows__open"
-            : "item-rows item-rows__closed"
+          isOpen ? "item-rows item-rows__open" : "item-rows item-rows__closed"
         }
       >
         {childItems}
