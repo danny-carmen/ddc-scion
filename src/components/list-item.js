@@ -1,4 +1,5 @@
 import React, { useEffect, useState, Children, useRef } from "react";
+import * as actionTypes from "../app/actionTypes";
 
 import { useSelector, useDispatch } from "react-redux";
 import ListItemShape from "./list-item-shape";
@@ -17,16 +18,12 @@ import {
   selectCount,
   toggleOpen,
   setFocusItem,
+  setActionType,
+  removeChild,
+  gatherAndDeleteListItemAndChildren,
 } from "../features/list-item-slice";
 
-//if I really want to break up the rendering, I could create a component for the shape as well, which would only listen for certain items in the object
-//then the children could be a component as well, which would only listen for the childrenids array
-//the main component would only listen for the isOpen?
-//line would be a component as well, and it would trigger the onfocused event for the object, which the shape would then respond to
-//might get screwy with a ref, but I'll give it a go
-//this way, updates to the content will not trigger an update to all children, only the
-//does listItem really need to be separate? It is kind of separate already, as it is the separate components
-//key is checking if the object deconstructon will work to avoid rerender
+//need to move line into
 
 const ListItem = (props, children) => {
   let dispatch = useDispatch();
@@ -37,6 +34,14 @@ const ListItem = (props, children) => {
   //   return state.listItems.listItems[props.listItemId];
   // });
 
+  // const { isOpen, isFocused, childrenIds } = useSelector((state) => {
+  //   return state.listItems.listItems[props.listItemId];
+  // });
+
+  const actionType = useSelector((state) => {
+    return state.listItems.listItems[props.listItemId].actionType;
+  });
+
   const isOpen = useSelector((state) => {
     return state.listItems.listItems[props.listItemId].isOpen;
   });
@@ -46,8 +51,23 @@ const ListItem = (props, children) => {
   });
 
   const childItems = childrenIds.map((childId, idx) => {
-    return <ListItem key={idx} listItemId={childId} />;
+    return (
+      <ListItem
+        key={idx}
+        listItemId={childId}
+        removeChild={(childId) => removeChildItem(childId)}
+      />
+    );
   });
+
+  function removeChildItem(childItemIdToRemove) {
+    dispatch(
+      removeChild({
+        parentItemId: props.listItemId,
+        childItemIdToRemove: childItemIdToRemove,
+      })
+    );
+  }
 
   //potentially something here to change childItems if it is closed, so those aren't even considered to be rendered
   // also set the height in a local state after rendering, then that could be used to hardcode the height in when it is closed?
@@ -65,8 +85,26 @@ const ListItem = (props, children) => {
   }
 
   useEffect(() => {
-    // console.log(`List Item ${props.listItemId} container has loaded`);
+    console.log(`List Item ${props.listItemId} container has loaded`);
   });
+
+  useEffect(() => {
+    console.log(
+      `Action Type on List Item ${props.listItemId} has changed to ${actionType}`
+    );
+
+    if (actionType === actionTypes.NEW_LIST_ITEM) {
+      dispatch(
+        setActionType({ idToModify: props.listItemId, newActionType: null })
+      );
+      handleFocusClick();
+    }
+    if (actionType === actionTypes.DELETE_LIST_ITEM) {
+      props.removeChild(props.listItemId);
+
+      dispatch(gatherAndDeleteListItemAndChildren());
+    }
+  }, [actionType]);
 
   return (
     <div className="container">

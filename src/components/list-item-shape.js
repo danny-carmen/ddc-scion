@@ -11,25 +11,16 @@ import {
   toggleOpen,
   setFocusItem,
 } from "../features/list-item-slice";
+import * as actionTypes from "../app/actionTypes";
 
 const ListItemShape = (props) => {
   const dispatch = useDispatch();
 
-  const { isOpen, content, isFocused, childrenIds } = useSelector((state) => {
-    return state.listItems.listItems[props.listItemId];
-  });
-
-  //   const isOpen = useSelector((state) => {
-  //     return state.listItems.listItems[props.listItemId].isOpen;
-  //   });
-
-  //   const content = useSelector((state) => {
-  //     return state.listItems.listItems[props.listItemId].content;
-  //   });
-
-  //   const isFocused = useSelector((state) => {
-  //     return state.listItems.listItems[props.listItemId].isFocused;
-  //   });
+  const { isOpen, content, isFocused, childrenIds, actionType } = useSelector(
+    (state) => {
+      return state.listItems.listItems[props.listItemId];
+    }
+  );
 
   // function handleFocusClick() {
   //   dispatch(setFocusItem(props.listItemId));
@@ -44,14 +35,14 @@ const ListItemShape = (props) => {
   // }
 
   useEffect(() => {
-    // console.log(`List Item ${props.listItemId} shape has loaded`);
+    console.log(`List Item ${props.listItemId} shape has loaded`);
   });
 
   return (
     <div
       name="shape"
       ref={props.shapeElement}
-      onMouseDown={isFocused ? "" : props.handleFocusClick}
+      onMouseDown={isFocused ? null : props.handleFocusClick}
       className={isFocused ? "shape shape__focused" : "shape"}
     >
       <div
@@ -60,12 +51,12 @@ const ListItemShape = (props) => {
             ? (e) => {
                 dispatch(
                   toggleOpen({
-                    parentItemId: props.listItemId,
-                    toggledValue: !isOpen,
+                    idToModify: props.listItemId,
+                    setOpen: !isOpen,
                   })
                 );
               }
-            : ""
+            : null
         }
         className={isOpen ? "list-item-symbol open" : "list-item-symbol closed"}
       >
@@ -77,8 +68,11 @@ const ListItemShape = (props) => {
       </div>
       <input
         type="text"
+        autoComplete="off"
+        autoFocus={actionType === actionTypes.NEW_LIST_ITEM ? true : false}
         name="content"
         value={content}
+        onFocus={isFocused ? null : props.handleFocusClick}
         onChange={(e) => {
           dispatch(
             modifyListItemContent({
