@@ -4,6 +4,7 @@ import * as actionTypes from "../app/actionTypes";
 const initialState = {
   currentFocusItemId: null,
   newListItem: {
+    listItemVersion: "0.0.1",
     actionType: actionTypes.NEW_LIST_ITEM,
     isOpen: true,
     isFocused: true,

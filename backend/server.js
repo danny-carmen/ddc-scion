@@ -14,6 +14,10 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
 
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 const uri = process.env.URL;
 
 mongoose.connect(uri, { useNewUrlParser: true });
@@ -22,17 +26,14 @@ connection.once("open", () => {
   console.log("MongoDB connection established.");
 });
 
-app.use(express.static(path.join(__dirname, "/../build")));
+// app.use(express.static(path.join(__dirname, "/../build")));
 
-// app.use(cors({ origin: "*", credentials: true }));
-app.use(
-  cors({
-    origin: ["http://localhost:3000"],
-    credentials: true,
-  })
-);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// app.use(
+//   cors({
+//     origin: ["http://localhost:3000"],
+//     credentials: true,
+//   })
+// );
 
 // const sessionStore = new MongoStore({
 //   mongoUrl: process.env.ATLAS_URI,
@@ -48,12 +49,20 @@ app.use(express.urlencoded({ extended: true }));
 //   })
 // );
 
-app.use(passport.initialize());
-app.use(passport.session());
+const usersRouter = require("./routes/users");
+// const listsRouter = require("./routes/lists");
+// const listItemsRouter = require("./routes/listitems");
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname + "/../build/index.html"));
-});
+app.use("/users", usersRouter);
+// app.use("/lists", listsRouter);
+// app.use("/listItems", listItemsRouter);
+
+// app.use(passport.initialize());
+// app.use(passport.session());
+
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname + "/../build/index.html"));
+// });
 
 app.listen(port, () => {
   console.log(`Server is running on port:${port}`);
