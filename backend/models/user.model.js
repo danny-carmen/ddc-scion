@@ -12,8 +12,9 @@ const UserSchema = new Schema(
     username: { type: String, unique: true, required: true },
     hash: { type: String, required: true },
     salt: { type: String, required: true },
+    currentList: { type: String },
     lists: {
-      type: [List.Schema],
+      type: [List.schema],
       required: true,
     },
   },
