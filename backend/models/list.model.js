@@ -30,10 +30,10 @@ const ListSchema = new Schema(
       type: String,
       required: true,
     },
-    listItems: {
-      type: [ListItem.schema],
-      required: true,
-    },
+    // listItems: {
+    //   type: [ListItem.Schema],
+    //   required: true,
+    // },
   },
   {
     timestamps: true,
