@@ -22,8 +22,6 @@ router.post("/", (req, res, err) => {
     .catch((err) => console.log(err));
 });
 
-// router.put()
-
 module.exports = router;
 
 // router.post("/register", jsonParser, (req, res, err) => {
