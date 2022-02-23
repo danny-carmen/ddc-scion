@@ -15,12 +15,16 @@ import * as actionTypes from "../app/actionTypes";
 
 const ListItemShape = (props) => {
   const dispatch = useDispatch();
-
-  const { isOpen, content, isFocused, childrenIds, actionType } = useSelector(
+  const { isOpen, content, childrenIds, actionType, isSelected } = useSelector(
     (state) => {
       return state.listItems.listItems[props.listItemId];
     }
   );
+  const { currentFocusItemId } = useSelector((state) => {
+    return state.listItems;
+  });
+
+  const isFocused = props.listItemId === currentFocusItemId;
 
   // function handleFocusClick() {
   //   dispatch(setFocusItem(props.listItemId));
@@ -42,31 +46,18 @@ const ListItemShape = (props) => {
     <div
       name="shape"
       ref={props.shapeElement}
-      onMouseDown={isFocused ? null : props.handleFocusClick}
-      className={isFocused ? "shape shape__focused" : "shape"}
+      onClick={isFocused ? null : props.handleFocusClick}
+      className={
+        isSelected
+          ? "shape shape__selected "
+          : isFocused
+          ? "shape shape__focused"
+          : "shape"
+      }
     >
-      <div
-        onMouseDown={
-          childrenIds.length > 0
-            ? (e) => {
-                dispatch(
-                  toggleOpen({
-                    idToModify: props.listItemId,
-                    setOpen: !isOpen,
-                  })
-                );
-              }
-            : null
-        }
-        className={isOpen ? "list-item-symbol open" : "list-item-symbol closed"}
-      >
-        {childrenIds.length > 0 ? (
-          <FontAwesomeIcon className="arrow" icon={faCaretRight} />
-        ) : (
-          <FontAwesomeIcon className="circle" icon={faCircle} />
-        )}
-      </div>
-      <input
+      {content}
+
+      {/* <input
         type="text"
         autoComplete="off"
         autoFocus={actionType === actionTypes.NEW_LIST_ITEM ? true : false}
@@ -81,7 +72,7 @@ const ListItemShape = (props) => {
             })
           );
         }}
-      />
+      /> */}
     </div>
   );
 };

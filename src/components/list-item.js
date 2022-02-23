@@ -18,10 +18,11 @@ import {
   selectCount,
   toggleOpen,
   setFocusItem,
+  toggleCompleted,
   setActionType,
   removeChild,
-  gatherAndDeleteListItemAndChildren,
 } from "../features/list-item-slice";
+import StatusBar from "./status-bar";
 
 //need to move line into
 
@@ -30,20 +31,16 @@ const ListItem = (props, children) => {
 
   const shapeElement = useRef(null);
 
-  // const listObject = useSelector((state) => {
-  //   return state.listItems.listItems[props.listItemId];
-  // });
-
-  // const { isOpen, isFocused, childrenIds } = useSelector((state) => {
-  //   return state.listItems.listItems[props.listItemId];
-  // });
-
-  const actionType = useSelector((state) => {
-    return state.listItems.listItems[props.listItemId].actionType;
-  });
-
   const isOpen = useSelector((state) => {
     return state.listItems.listItems[props.listItemId].isOpen;
+  });
+
+  const isCompleted = useSelector((state) => {
+    return state.listItems.listItems[props.listItemId].isCompleted;
+  });
+
+  const priority = useSelector((state) => {
+    return state?.listItems?.listItems?.[props.listItemId]?.priority;
   });
 
   const childrenIds = useSelector((state) => {
@@ -51,72 +48,50 @@ const ListItem = (props, children) => {
   });
 
   const childItems = childrenIds.map((childId, idx) => {
-    return (
-      <ListItem
-        key={idx}
-        listItemId={childId}
-        removeChild={(childId) => removeChildItem(childId)}
-      />
-    );
+    return <ListItem key={idx} listItemId={childId} />;
   });
 
-  function removeChildItem(childItemIdToRemove) {
-    dispatch(
-      removeChild({
-        parentItemId: props.listItemId,
-        childItemIdToRemove: childItemIdToRemove,
-      })
-    );
-  }
+  const handleCheckItem = () => {
+    dispatch(toggleCompleted(props.listItemId));
+  };
 
+  function scrollToListItem() {
+    if (shapeElement.current) {
+      window.scrollTo({
+        top: shapeElement.current.offsetTop - 150,
+        left: shapeElement.current.offsetLeft - window.innerWidth / 2 + 150,
+        behavior: "smooth",
+      });
+    }
+  }
   //potentially something here to change childItems if it is closed, so those aren't even considered to be rendered
   // also set the height in a local state after rendering, then that could be used to hardcode the height in when it is closed?
-  function handleFocusClick(e) {
+  function handleFocusClick() {
     dispatch(setFocusItem(props.listItemId));
-    window.scrollTo({
-      top: shapeElement.current.offsetTop - 150,
-      left: shapeElement.current.offsetLeft - window.innerWidth / 2 + 150,
-      behavior: "smooth",
-    });
-
-    // console.log(this.offsetTop, this.offsetLeft);
-
-    //scroll to item
+    scrollToListItem();
   }
-
-  useEffect(() => {
-    console.log(`List Item ${props.listItemId} container has loaded`);
-  });
-
-  useEffect(() => {
-    console.log(
-      `Action Type on List Item ${props.listItemId} has changed to ${actionType}`
-    );
-
-    if (actionType === actionTypes.NEW_LIST_ITEM) {
-      dispatch(
-        setActionType({ idToModify: props.listItemId, newActionType: null })
-      );
-      handleFocusClick();
-    }
-    if (actionType === actionTypes.DELETE_LIST_ITEM) {
-      props.removeChild(props.listItemId);
-
-      dispatch(gatherAndDeleteListItemAndChildren());
-    }
-  }, [actionType]);
 
   return (
     <div className="container">
+      <StatusBar
+        isOpen={isOpen}
+        priority={priority}
+        isCompleted={isCompleted}
+        handleCheckItem={handleCheckItem}
+        hasChildren={childrenIds.length > 0}
+        handleFocusClick={handleFocusClick}
+        handleOpenClick={() => {
+          dispatch(
+            toggleOpen({ idToModify: props.listItemId, setOpen: !isOpen })
+          );
+        }}
+      />
       <ListItemShape
         shapeElement={shapeElement}
         listItemId={props.listItemId}
         handleFocusClick={handleFocusClick}
       />
 
-      <div className="line-wrapper" onMouseDown={handleFocusClick}>
-        <div className="line"> </div>
-      </div>
       <div
         className={
           isOpen ? "item-rows item-rows__open" : "item-rows item-rows__closed"

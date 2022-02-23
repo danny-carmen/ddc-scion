@@ -1,0 +1,10 @@
+export const ADD_LIST_ITEM = "add-list-item";
+export const COPY_LIST_ITEM = "copy-list-item";
+export const DELETE_LIST_ITEM = "delete-list-item";
+export const MOVE_LIST_ITEM = "move-list-item";
+export const EDIT_LIST_ITEM = "edit-list-item";
+export const SEARCH = "search";
+export const VIEW = "view";
+export const ACCOUNT = "account";
+export const SETTINGS = "settings";
+export const EXPORT = "export";
