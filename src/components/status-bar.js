@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTimes,
@@ -16,13 +16,8 @@ const StatusBar = (props) => {
         handleCheckItem={props.handleCheckItem}
         isCompleted={props.isCompleted}
         priority={props.priority}
+        hasChildren={props.hasChildren}
       />
-      {props.hasChildren ? (
-        <OpenSymbol
-          handleOpenClick={props.handleOpenClick}
-          isOpen={props.isOpen}
-        />
-      ) : null}
       {props.isOpen && props.hasChildren ? (
         <ChildLine handleFocusClick={props.handleFocusClick} />
       ) : null}
@@ -32,15 +27,20 @@ const StatusBar = (props) => {
 
 const Priority = (props) => {
   const priority = props.priority ? props.priority : " ";
-  debugger;
   return (
-    <div className="priority" onClick={props.handleCheckItem}>
-      {props.isCompleted ? (
-        <FontAwesomeIcon className="arrow" icon={faCheck} />
-      ) : (
-        priority
-      )}
-    </div>
+    <Fragment>
+      <div
+        className={props.hasChildren ? "priority with-children" : "priority"}
+        onClick={props.handleCheckItem}
+      ></div>
+      <div className="priority-text">
+        {props.isCompleted ? (
+          <FontAwesomeIcon className="arrow" icon={faCheck} />
+        ) : (
+          priority
+        )}
+      </div>
+    </Fragment>
   );
 };
 

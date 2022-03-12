@@ -12,10 +12,10 @@ const IconButton = (props) => {
     if (clickCount.current <= 1) {
       setTimeout(() => {
         if (clickCount.current === 1) {
-          props.openMenu(props.tabName);
+          props.openMenu({ tabName: props.tabName });
         } else {
           if (props.primaryAction) props.primaryAction();
-          else props.openMenu(props.tabName);
+          else props.openMenu({ tabName: props.tabName });
         }
 
         clickCount.current = 0;

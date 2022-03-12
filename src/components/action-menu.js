@@ -12,6 +12,7 @@ import {
   finishAction,
   removeChild,
   deleteListItemAndChildren,
+  orderChildItems,
 } from "../features/list-item-slice";
 import {
   faArrowsAlt,
@@ -52,7 +53,7 @@ const ActionMenu = () => {
   }
 
   function handleMoveListItem() {
-    debugger;
+    // debugger;
     dispatch(setSelectedItem());
     dispatch(setMode(actionTypes.MOVE_LIST_ITEM));
   }
@@ -61,13 +62,14 @@ const ActionMenu = () => {
     if (currentMode === actionTypes.MOVE_LIST_ITEM) {
       debugger;
       dispatch(removeChild(currentSelectedItemId));
+      dispatch(orderChildItems());
       dispatch(setChild());
       dispatch(finishAction());
     }
   }, [currentFocusItemId]);
 
   function handleDeleteListItem() {
-    debugger;
+    // debugger;
     dispatch(removeChild(currentFocusItemId));
     dispatch(deleteListItemAndChildren());
   }

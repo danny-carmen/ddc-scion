@@ -47,6 +47,12 @@ const ListItemShape = (props) => {
       name="shape"
       ref={props.shapeElement}
       onClick={isFocused ? null : props.handleFocusClick}
+      onDoubleClick={() => {
+        debugger;
+        dispatch(
+          toggleOpen({ idToModify: props.listItemId, setOpen: !isOpen })
+        );
+      }}
       className={
         isSelected
           ? "shape shape__selected "

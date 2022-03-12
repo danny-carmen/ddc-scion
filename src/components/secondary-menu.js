@@ -8,6 +8,10 @@ const SecondaryMenu = () => {
     return state.menu.currentMenu;
   });
 
+  const currentFocusItemId = useSelector((state) => {
+    return state.listItems.currentFocusItemId;
+  });
+
   let currentMenu = "";
   switch (currentMenuSelection) {
     case TAB_NAMES.EDIT_LIST_ITEM:

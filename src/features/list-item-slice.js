@@ -18,22 +18,26 @@ const initialState = {
   listItems: {
     0: {
       actionType: "",
-      priority: 3,
+      priority: 0,
       isOpen: true,
       isFocused: false,
       content: "Item 0",
-      childrenIds: [1, 2],
+      childrenIds: [1, 2, 3, 5, 6, 7],
       isSelected: false,
+      lowestSetPriority: 0,
+      parentId: null,
     },
     1: {
       actionType: "",
-      priority: 1,
+      priority: 0,
       isOpen: false,
       isFocused: false,
       isCompleted: true,
       content: "Item 1",
-      childrenIds: [3],
+      childrenIds: [],
       isSelected: false,
+      lowestSetPriority: 0,
+      parentId: null,
     },
     2: {
       actionType: "",
@@ -41,35 +45,43 @@ const initialState = {
       isOpen: true,
       isFocused: false,
       content: "Item 2",
-      childrenIds: [4, 5, 6],
+      childrenIds: [],
       isSelected: false,
+      lowestSetPriority: 0,
+      parentId: null,
     },
     3: {
       actionType: "",
-      priority: 1,
+      priority: 1.5,
       isOpen: true,
       isFocused: false,
       content: "Item 3",
-      childrenIds: [],
+      childrenIds: [4],
       isSelected: false,
+      lowestSetPriority: 0,
+      parentId: null,
     },
     4: {
       actionType: "",
-      priority: 1,
+      priority: 2,
       isOpen: true,
       isFocused: false,
       content: "Item 4",
       childrenIds: [],
       isSelected: false,
+      lowestSetPriority: 0,
+      parentId: null,
     },
     5: {
       actionType: "",
-      priority: 1,
+      priority: 3,
       isOpen: true,
       isFocused: false,
       content: "Item 5",
-      childrenIds: [7],
+      childrenIds: [],
       isSelected: false,
+      lowestSetPriority: 0,
+      parentId: null,
     },
     6: {
       actionType: "",
@@ -79,6 +91,8 @@ const initialState = {
       content: "Item 6",
       childrenIds: [],
       isSelected: false,
+      lowestSetPriority: 0,
+      parentId: null,
     },
     7: {
       actionType: "",
@@ -88,6 +102,8 @@ const initialState = {
       content: "Item 7",
       childrenIds: [],
       isSelected: false,
+      lowestSetPriority: 0,
+      parentId: null,
     },
   },
 };
@@ -98,22 +114,16 @@ const initialState = {
 
 //way to do undo
 
-//do actions onclick rather than mousedown, I think that will be needed for mobile
-
 //incorporate arrow keys, escape key at some point,
 
 //also inputs need to define focused element when tabbed to
-
-//Next step incorporating with mongodb?
-
-//OR move and copy functions? Info?
 
 export const listItemSlice = createSlice({
   name: "listItemArray",
   initialState,
   reducers: {
     setActionType: (state, action) => {
-      debugger;
+      // debugger;
       state.listItems[
         action.payload.idToModify !== null
           ? action.payload.idToModify
@@ -123,6 +133,7 @@ export const listItemSlice = createSlice({
 
     removeChild: (state, action) => {
       const childIdToRemove = action.payload;
+      state.listItems[action.payload].priority = 0;
       const keys = Object.keys(state.listItems);
       keys.forEach((key) => {
         if (state.listItems[key].childrenIds.includes(childIdToRemove)) {
@@ -137,15 +148,22 @@ export const listItemSlice = createSlice({
 
     //set child should probably receive a payload at some point, maybe not
     setChild: (state, action) => {
-      debugger;
+      // debugger;
       state.listItems[state.currentFocusItemId].childrenIds = [
         ...state.listItems[state.currentFocusItemId].childrenIds,
         state.currentSelectedItemId,
       ];
     },
 
+    setPriority: (state, action) => {
+      // debugger;
+      state.listItems[action.payload.itemId].priority = parseFloat(
+        action.payload.newPriority
+      );
+    },
+
     deleteListItemAndChildren: (state, action) => {
-      debugger;
+      // debugger;
       let itemsToDelete = [];
       itemsToDelete.push(state.currentFocusItemId);
 
@@ -181,7 +199,7 @@ export const listItemSlice = createSlice({
       //set actiontype to remove child from parent of selected item
       //set focused item to be parent of selected item
       //set selecteditem to be focused item, way to move to
-      debugger;
+      // debugger;
       state.listItems[state.currentSelectedItemId].isSelected = false;
       state.currentSelectedItemId = null;
       state.currentMode = null;
@@ -200,6 +218,7 @@ export const listItemSlice = createSlice({
         action.payload !== null ? action.payload : state.currentFocusItemId;
       state.listItems[idToModify].isCompleted =
         !state.listItems[idToModify].isCompleted;
+      state.listItems[idToModify].priority = 0;
     },
 
     setFocusItem: (state, action) => {
@@ -212,6 +231,11 @@ export const listItemSlice = createSlice({
       }
     },
 
+    setParentItemId: (state, action) => {
+      state.listItems[action.payload.childId].parentId =
+        action.payload.parentId;
+    },
+
     setSelectedItem: (state, action) => {
       if (state.currentSelectedItemId === null) {
         state.listItems[state.currentFocusItemId].isSelected = true;
@@ -222,12 +246,66 @@ export const listItemSlice = createSlice({
     setMode: (state, action) => {
       state.currentMode = action.payload;
     },
+
+    orderChildItems: (state, action) => {
+      //order by priority
+      debugger;
+
+      const childArray = [...state.listItems[action.payload].childrenIds];
+      if (childArray.length <= 1) return;
+      const childrenWithoutSetPriority = childArray.filter((childItem) => {
+        return state.listItems[childItem].priority === 0;
+      });
+
+      const childrenWithSetPriority = childArray.filter((childItem) => {
+        return state.listItems[childItem].priority !== 0;
+      });
+
+      childrenWithSetPriority.sort((childId1, childId2) => {
+        return (
+          state.listItems[childId1].priority -
+          state.listItems[childId2].priority
+        );
+      });
+
+      const priorityArray = childrenWithSetPriority.map((childItem) => {
+        return state.listItems[childItem].priority;
+      });
+      const priorityArrayWithoutDuplicates = Array.from(new Set(priorityArray));
+
+      priorityArrayWithoutDuplicates.sort((a, b) => {
+        return a - b;
+      });
+
+      childrenWithSetPriority.map((childItem) => {
+        // debugger;
+        const newPriority =
+          priorityArrayWithoutDuplicates.indexOf(
+            state.listItems[childItem].priority
+          ) + 1;
+        state.listItems[childItem].priority = newPriority;
+      });
+
+      state.listItems[action.payload].childrenIds = [
+        ...childrenWithSetPriority,
+        ...childrenWithoutSetPriority,
+      ];
+      //condense list to remove non-integers or gaps
+    },
   },
 });
 
 export const selectListItems = (state) => {
   return state.listItems.listItems;
 };
+
+export const getSelectedItem = (state) => {
+  return state.currentSelectedItemId;
+};
+
+// export const determineLowestSetPriority = (state) => {
+
+// }
 
 export const {
   addListItem,
@@ -236,12 +314,16 @@ export const {
   toggleOpen,
   setFocusItem,
   setSelectedItem,
+  setActionType,
   removeChild,
   setMode,
   finishAction,
   setChild,
   deleteListItemAndChildren,
   toggleCompleted,
+  orderChildItems,
+  setParentItemId,
+  setPriority,
 } = listItemSlice.actions;
 
 export default listItemSlice.reducer;
