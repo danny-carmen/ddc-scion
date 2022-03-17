@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTimes,
@@ -7,14 +7,54 @@ import {
   faCircle,
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
-import { useSelector } from "react-redux";
+import {
+  addListItem,
+  deleteListItem,
+  modifyListItem,
+  selectListItems,
+  selectCount,
+  toggleOpen,
+  setFocusItem,
+  toggleCompleted,
+  orderChildItems,
+  setActionType,
+  removeChild,
+  determineLowestSetPriority,
+  getSelectedItem,
+  setParentItemId,
+} from "../features/list-item-slice";
+import * as actionTypes from "../app/actionTypes";
+import { useDispatch, useSelector } from "react-redux";
 
 const StatusBar = (props) => {
+  const dispatch = useDispatch();
+  const isCompleted = useSelector((state) => {
+    return state.listItems.listItems[props.listItemId].isCompleted;
+  });
+
+  const actionType = useSelector((state) => {
+    return state.listItems.listItems[props.listItemId].actionType;
+  });
+
+  useEffect(() => {
+    // debugger;
+    if (actionType === actionTypes.ORDER_CHILD_ITEMS) {
+      debugger;
+      dispatch(orderChildItems(props.listItemId));
+    }
+    dispatch(
+      setActionType({
+        idToModify: props.listItemId,
+        newActionType: actionTypes.NO_ACTION,
+      })
+    );
+  }, [actionType]);
+
   return (
     <div className="status-bar-wrapper">
       <Priority
         handleCheckItem={props.handleCheckItem}
-        isCompleted={props.isCompleted}
+        isCompleted={isCompleted}
         priority={props.priority}
         hasChildren={props.hasChildren}
       />

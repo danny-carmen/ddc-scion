@@ -62,7 +62,7 @@ const ActionMenu = () => {
     if (currentMode === actionTypes.MOVE_LIST_ITEM) {
       debugger;
       dispatch(removeChild(currentSelectedItemId));
-      dispatch(orderChildItems());
+      dispatch(orderChildItems(currentFocusItemId));
       dispatch(setChild());
       dispatch(finishAction());
     }

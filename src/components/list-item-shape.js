@@ -21,6 +21,7 @@ const ListItemShape = (props) => {
     }
   );
   const { currentFocusItemId } = useSelector((state) => {
+    //I'd rather have this be an action type, not checking for every single one
     return state.listItems;
   });
 
@@ -62,23 +63,6 @@ const ListItemShape = (props) => {
       }
     >
       {content}
-
-      {/* <input
-        type="text"
-        autoComplete="off"
-        autoFocus={actionType === actionTypes.NEW_LIST_ITEM ? true : false}
-        name="content"
-        value={content}
-        onFocus={isFocused ? null : props.handleFocusClick}
-        onChange={(e) => {
-          dispatch(
-            modifyListItemContent({
-              idToModify: props.listItemId,
-              content: e.target.value,
-            })
-          );
-        }}
-      /> */}
     </div>
   );
 };

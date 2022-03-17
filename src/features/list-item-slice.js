@@ -18,91 +18,82 @@ const initialState = {
   listItems: {
     0: {
       actionType: "",
-      priority: 0,
       isOpen: true,
       isFocused: false,
       content: "Item 0",
-      childrenIds: [1, 2, 3, 5, 6, 7],
+      childrenIds: [
+        { id: 1, priority: 0 },
+        { id: 2, priority: 1 },
+        { id: 3, priority: 1.5 },
+        { id: 5, priority: 3 },
+        { id: 6, priority: 1 },
+        { id: 7, priority: 1 },
+      ],
       isSelected: false,
-      lowestSetPriority: 0,
       parentId: null,
     },
     1: {
       actionType: "",
-      priority: 0,
       isOpen: false,
       isFocused: false,
       isCompleted: true,
       content: "Item 1",
       childrenIds: [],
       isSelected: false,
-      lowestSetPriority: 0,
       parentId: null,
     },
     2: {
       actionType: "",
-      priority: 1,
       isOpen: true,
       isFocused: false,
       content: "Item 2",
       childrenIds: [],
       isSelected: false,
-      lowestSetPriority: 0,
       parentId: null,
     },
     3: {
       actionType: "",
-      priority: 1.5,
       isOpen: true,
       isFocused: false,
       content: "Item 3",
-      childrenIds: [4],
+      childrenIds: [{ id: 4, priority: 2 }],
       isSelected: false,
-      lowestSetPriority: 0,
       parentId: null,
     },
     4: {
       actionType: "",
-      priority: 2,
       isOpen: true,
       isFocused: false,
       content: "Item 4",
       childrenIds: [],
       isSelected: false,
-      lowestSetPriority: 0,
       parentId: null,
     },
     5: {
       actionType: "",
-      priority: 3,
       isOpen: true,
       isFocused: false,
       content: "Item 5",
       childrenIds: [],
       isSelected: false,
-      lowestSetPriority: 0,
       parentId: null,
     },
     6: {
       actionType: "",
-      priority: 1,
       isOpen: true,
       isFocused: false,
       content: "Item 6",
       childrenIds: [],
       isSelected: false,
-      lowestSetPriority: 0,
       parentId: null,
     },
     7: {
       actionType: "",
-      priority: 1,
       isOpen: true,
       isFocused: false,
       content: "Item 7",
       childrenIds: [],
       isSelected: false,
-      lowestSetPriority: 0,
       parentId: null,
     },
   },
@@ -131,35 +122,46 @@ export const listItemSlice = createSlice({
       ].actionType = action.payload.newActionType;
     },
 
+    //remove child should be an action type, rather than going through entire list of items TODO
     removeChild: (state, action) => {
+      debugger;
       const childIdToRemove = action.payload;
-      state.listItems[action.payload].priority = 0;
       const keys = Object.keys(state.listItems);
       keys.forEach((key) => {
-        if (state.listItems[key].childrenIds.includes(childIdToRemove)) {
-          state.listItems[key].childrenIds.splice(
-            state.listItems[key].childrenIds.indexOf(childIdToRemove),
-            1
-          );
+        if (
+          state.listItems[key].childrenIds.some(
+            (childItem) => childItem.id === childIdToRemove
+          )
+        ) {
+          state.listItems[key].childrenIds = state.listItems[
+            key
+          ].childrenIds.filter((child) => {
+            return child.id !== childIdToRemove;
+          });
+
           return;
         }
       });
     },
 
-    //set child should probably receive a payload at some point, maybe not
+    //set child should probably receive a payload at some point, maybe not, also probably should be called add child
     setChild: (state, action) => {
-      // debugger;
+      debugger;
       state.listItems[state.currentFocusItemId].childrenIds = [
         ...state.listItems[state.currentFocusItemId].childrenIds,
-        state.currentSelectedItemId,
+        { id: state.currentSelectedItemId, priority: 0 },
       ];
     },
 
     setPriority: (state, action) => {
-      // debugger;
-      state.listItems[action.payload.itemId].priority = parseFloat(
-        action.payload.newPriority
-      );
+      debugger;
+      const childItem = state.listItems[action.payload.itemId];
+      state.listItems[childItem.parentId].childrenIds.forEach((child) => {
+        if (child.id === action.payload.itemId) {
+          debugger;
+          child.priority = parseFloat(action.payload.newPriority);
+        }
+      });
     },
 
     deleteListItemAndChildren: (state, action) => {
@@ -188,7 +190,7 @@ export const listItemSlice = createSlice({
 
       state.listItems[state.currentFocusItemId].childrenIds = [
         ...state.listItems[state.currentFocusItemId].childrenIds,
-        state.nextId,
+        { id: state.nextId, priority: 0 },
       ];
 
       state.nextId += 1; //remove this once getting info from mongoDB
@@ -214,11 +216,18 @@ export const listItemSlice = createSlice({
     },
 
     toggleCompleted: (state, action) => {
+      debugger;
       const idToModify =
         action.payload !== null ? action.payload : state.currentFocusItemId;
       state.listItems[idToModify].isCompleted =
         !state.listItems[idToModify].isCompleted;
-      state.listItems[idToModify].priority = 0;
+
+      const listItem = state.listItems[idToModify];
+
+      state.listItems[listItem.parentId].childrenIds.forEach((child) => {
+        debugger;
+        if (child.id === idToModify) child.priority = 0;
+      });
     },
 
     setFocusItem: (state, action) => {
@@ -251,25 +260,27 @@ export const listItemSlice = createSlice({
       //order by priority
       debugger;
 
-      const childArray = [...state.listItems[action.payload].childrenIds];
-      if (childArray.length <= 1) return;
+      const childArray = [...state.listItems?.[action.payload]?.childrenIds];
+      if (childArray === undefined || childArray.length <= 1) return;
       const childrenWithoutSetPriority = childArray.filter((childItem) => {
-        return state.listItems[childItem].priority === 0;
+        if (state.listItems[childItem.id].isCompleted !== true)
+          return childItem.priority === 0;
+      });
+
+      const completedChildren = childArray.filter((childItem) => {
+        return state.listItems[childItem.id].isCompleted === true;
       });
 
       const childrenWithSetPriority = childArray.filter((childItem) => {
-        return state.listItems[childItem].priority !== 0;
+        return childItem.priority !== 0;
       });
 
       childrenWithSetPriority.sort((childId1, childId2) => {
-        return (
-          state.listItems[childId1].priority -
-          state.listItems[childId2].priority
-        );
+        return childId1.priority - childId2.priority;
       });
 
       const priorityArray = childrenWithSetPriority.map((childItem) => {
-        return state.listItems[childItem].priority;
+        return childItem.priority;
       });
       const priorityArrayWithoutDuplicates = Array.from(new Set(priorityArray));
 
@@ -278,19 +289,17 @@ export const listItemSlice = createSlice({
       });
 
       childrenWithSetPriority.map((childItem) => {
-        // debugger;
+        debugger;
         const newPriority =
-          priorityArrayWithoutDuplicates.indexOf(
-            state.listItems[childItem].priority
-          ) + 1;
-        state.listItems[childItem].priority = newPriority;
+          priorityArrayWithoutDuplicates.indexOf(childItem.priority) + 1;
+        childItem.priority = newPriority;
       });
 
       state.listItems[action.payload].childrenIds = [
         ...childrenWithSetPriority,
         ...childrenWithoutSetPriority,
+        ...completedChildren,
       ];
-      //condense list to remove non-integers or gaps
     },
   },
 });
@@ -302,10 +311,6 @@ export const selectListItems = (state) => {
 export const getSelectedItem = (state) => {
   return state.currentSelectedItemId;
 };
-
-// export const determineLowestSetPriority = (state) => {
-
-// }
 
 export const {
   addListItem,

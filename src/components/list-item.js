@@ -34,26 +34,11 @@ import { setMenu } from "../features/menu-slice";
 const ListItem = (props, children) => {
   let dispatch = useDispatch();
 
-  const [isFocused, setIsFocused] = useState(false);
-
   const shapeElement = useRef(null);
 
   const isOpen = useSelector((state) => {
+    debugger;
     return state.listItems.listItems[props.listItemId].isOpen;
-  });
-
-  //potentially bring back actionType, so that individual components can be updated
-
-  const actionType = useSelector((state) => {
-    return state.listItems.listItems[props.listItemId].actionType;
-  });
-
-  const isCompleted = useSelector((state) => {
-    return state.listItems.listItems[props.listItemId].isCompleted;
-  });
-
-  const priority = useSelector((state) => {
-    return state?.listItems?.listItems?.[props.listItemId]?.priority;
   });
 
   const childrenIds = useSelector((state) => {
@@ -61,38 +46,12 @@ const ListItem = (props, children) => {
   });
 
   useEffect(() => {
+    // is this one necessary if we have the action type for it?
     if (childrenIds.length > 0) {
       debugger;
       dispatch(orderChildItems(props.listItemId));
     }
   }, [childrenIds.length]);
-
-  useEffect(() => {
-    // debugger;
-    if (actionType === actionTypes.ORDER_CHILD_ITEMS) {
-      debugger;
-      dispatch(orderChildItems(props.listItemId));
-    }
-    dispatch(
-      setActionType({
-        idToModify: props.listItemId,
-        newActionType: actionTypes.NO_ACTION,
-      })
-    );
-  }, [actionType]);
-
-  // useEffect(() => {
-  //   debugger;
-  //   if (props.parentItemId !== undefined) {
-  //     dispatch(orderChildItems(props.parentItemId));
-  //   }
-  // }, [priority]);
-
-  // useEffect(() => {
-  //   if (childrenIds.length > 0) {
-  //     dispatch(orderChildItems(props.listItemId));
-  //   }
-  // }, []);
 
   useEffect(() => {
     dispatch(
@@ -107,8 +66,9 @@ const ListItem = (props, children) => {
     return (
       <ListItem
         key={idx}
-        listItemId={childId}
+        listItemId={childId.id}
         parentItemId={props.listItemId}
+        priority={childId.priority}
       />
     );
   });
@@ -138,8 +98,8 @@ const ListItem = (props, children) => {
     <div className="container">
       <StatusBar
         isOpen={isOpen}
-        priority={priority}
-        isCompleted={isCompleted}
+        priority={props.priority}
+        listItemId={props.listItemId}
         handleCheckItem={handleCheckItem}
         hasChildren={childrenIds.length > 0}
         handleFocusClick={handleFocusClick}
