@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import * as TAB_NAMES from "../app/tabNames";
+import AccountMenu from "./account-menu";
 import EditMenu from "./edit-menu";
 
 const SecondaryMenu = () => {
@@ -23,7 +24,7 @@ const SecondaryMenu = () => {
       break;
 
     case TAB_NAMES.ACCOUNT:
-      currentMenu = TAB_NAMES.ACCOUNT;
+      currentMenu = <AccountMenu />;
       break;
 
     case TAB_NAMES.SEARCH:
