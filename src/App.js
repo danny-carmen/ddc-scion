@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./styles/main.scss";
 import ActionMenu from "./components/action-menu";
 import ListItem from "./components/list-item";
@@ -9,27 +9,87 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { auth } from "./firebase-config";
+import { auth, db } from "./firebase-config";
+import {
+  doc,
+  setDoc,
+  getDoc,
+  query,
+  collection,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import { insertListItemFromDb } from "./features/list-item-slice";
+import { current } from "@reduxjs/toolkit";
+import { useDispatch } from "react-redux";
 
 function App() {
+  const dispatch = useDispatch();
   const [userIsLoggedIn, setUserIsLoggedIn] = useState(false);
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState();
+  const [currentList, setCurrentList] = useState("");
+  const [rootItem, setRootItem] = useState("");
 
-  onAuthStateChanged(auth, (currentUser) => {
+  onAuthStateChanged(auth, async (currentUser) => {
     setUser(currentUser);
   });
 
+  useEffect(async () => {
+    if (user) {
+      debugger;
+      const userInfo = await getDoc(doc(db, "users", user.uid));
+      setCurrentList(userInfo.data().currentList);
+    }
+  }, [user]);
+
+  useEffect(async () => {
+    //not supposed to make useeffect async? need to watch video
+    debugger;
+    if (currentList) {
+      const q = query(
+        collection(db, "list-items"),
+        where("list", "==", currentList)
+      );
+      const querySnapshot = await getDocs(q);
+      debugger;
+      querySnapshot.forEach((listItem) => {
+        debugger;
+
+        const listItemToInsert = {
+          id: listItem.id,
+          isOpen: listItem.data().isOpen,
+          listItemVersion: listItem.data().listItemVersion,
+          content: listItem.data().content,
+          childrenIds: listItem.data().childrenIds,
+        };
+
+        dispatch(insertListItemFromDb(listItemToInsert));
+        if (listItem.data().rootItem) setRootItem(listItem.id);
+        debugger;
+      });
+    }
+    //for each item, place into reduux
+  }, [currentList]);
+
   const register = async () => {
     try {
-      const user = await createUserWithEmailAndPassword(
+      debugger;
+      const userCredential = await createUserWithEmailAndPassword(
         auth,
         registerEmail,
         registerPassword
       );
+      //create database entry for user
+      debugger;
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        currentList: "",
+      });
+
+      debugger;
     } catch (error) {
       console.log(error);
     }
@@ -37,11 +97,12 @@ function App() {
 
   const login = async () => {
     try {
-      const user = await signInWithEmailAndPassword(
+      const userCredential = await signInWithEmailAndPassword(
         auth,
         loginEmail,
         loginPassword
       );
+      //get the users current list
     } catch (error) {
       console.log(error);
     }
@@ -55,8 +116,8 @@ function App() {
       {user ? (
         <>
           <ActionMenu />
-          <SecondaryMenu />
-          <ListItem listItemId={0} />
+          <SecondaryMenu userId={user.uid} setCurrentList={setCurrentList} />
+          {currentList && rootItem && <ListItem listItemId={rootItem} />}
         </>
       ) : (
         <>

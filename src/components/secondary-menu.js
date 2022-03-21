@@ -4,7 +4,7 @@ import * as TAB_NAMES from "../app/tabNames";
 import AccountMenu from "./account-menu";
 import EditMenu from "./edit-menu";
 
-const SecondaryMenu = () => {
+const SecondaryMenu = (props) => {
   const currentMenuSelection = useSelector((state) => {
     return state.menu.currentMenu;
   });
@@ -24,7 +24,12 @@ const SecondaryMenu = () => {
       break;
 
     case TAB_NAMES.ACCOUNT:
-      currentMenu = <AccountMenu />;
+      currentMenu = (
+        <AccountMenu
+          userId={props.userId}
+          setCurrentList={props.setCurrentList}
+        />
+      );
       break;
 
     case TAB_NAMES.SEARCH:
