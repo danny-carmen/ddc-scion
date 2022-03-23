@@ -22,10 +22,8 @@ const EditMenu = (props) => {
   });
 
   const itemPriority = useSelector((state) => {
-    debugger;
     return state.listItems.listItems[itemToEdit?.parentId]?.childrenIds.find(
       (childItem) => {
-        debugger;
         return childItem.id === currentFocusItemId;
       }
     )?.priority;
@@ -46,7 +44,6 @@ const EditMenu = (props) => {
 
     const lowestPriority = childItems.reduce(
       (lowestSetPriority, currentChild) => {
-        debugger;
         const currentChildPriority = currentChild.priority;
         if (lowestSetPriority <= currentChildPriority)
           return currentChildPriority;

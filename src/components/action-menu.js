@@ -13,6 +13,8 @@ import {
   removeChild,
   deleteListItemAndChildren,
   orderChildItems,
+  clearIdsToDelete,
+  clearChildToRemove,
 } from "../features/list-item-slice";
 import {
   faArrowsAlt,
@@ -30,22 +32,100 @@ import * as actionTypes from "../app/actionTypes";
 import IconButton from "./icon-button";
 import * as TAB_NAMES from "../app/tabNames";
 import { setMenu } from "../features/menu-slice";
+import {
+  addDoc,
+  doc,
+  collection,
+  writeBatch,
+  arrayUnion,
+  setDoc,
+  arrayRemove,
+} from "firebase/firestore";
+import { db } from "../firebase-config";
 
-const ActionMenu = () => {
+const ActionMenu = (props) => {
   let dispatch = useDispatch();
   useEffect(() => {
     console.log("The action menu rendered.");
   });
 
-  const { currentFocusItemId, currentMode, currentSelectedItemId } =
-    useSelector((state) => {
-      return state.listItems;
+  const {
+    currentFocusItemId,
+    currentMode,
+    currentSelectedItemId,
+    idsToDelete,
+    childToRemove,
+  } = useSelector((state) => {
+    return state.listItems;
+  });
+
+  useEffect(() => {
+    const deleteIdsFromDb = async () => {
+      debugger;
+      if (idsToDelete.length > 0) {
+        const batch = writeBatch(db);
+        debugger;
+        idsToDelete.forEach((id) => {
+          batch.delete(doc(db, "list-items", id));
+        });
+        debugger;
+        await batch.commit();
+
+        dispatch(clearIdsToDelete());
+      }
+    };
+
+    deleteIdsFromDb();
+  }, [idsToDelete]);
+
+  useEffect(() => {
+    const removeChildFromDb = async () => {
+      debugger;
+      if (Object.keys(childToRemove).length > 0) {
+        await setDoc(
+          doc(db, "list-items", childToRemove.parentId),
+          {
+            childrenIds: arrayRemove({
+              id: childToRemove.childId,
+              priority: childToRemove.priority,
+            }),
+          },
+          { merge: true }
+        );
+        dispatch(clearChildToRemove());
+      }
+    };
+
+    removeChildFromDb();
+  }, [childToRemove]);
+
+  async function handleAddNewListItem() {
+    const newListItemRef = doc(collection(db, "list-items"));
+    const batch = writeBatch(db);
+
+    debugger;
+    batch.set(
+      doc(db, "list-items", currentFocusItemId),
+      {
+        isOpen: true,
+        childrenIds: arrayUnion({ id: newListItemRef.id, priority: 0 }),
+      },
+      { merge: true }
+    );
+    batch.set(newListItemRef, {
+      listItemVersion: "0.0.1",
+      list: props.currentList,
+      isOpen: true,
+      content: "",
+      childrenIds: [],
+      isCompleted: false,
     });
 
-  function handleAddNewListItem() {
+    await batch.commit();
+
     dispatch(toggleOpen({ idToModify: null, setOpen: true }));
 
-    dispatch(addListItem());
+    dispatch(addListItem(newListItemRef.id));
   }
 
   function openMenu(payload) {
@@ -68,8 +148,8 @@ const ActionMenu = () => {
     }
   }, [currentFocusItemId]);
 
-  function handleDeleteListItem() {
-    // debugger;
+  async function handleDeleteListItem() {
+    debugger;
     dispatch(removeChild(currentFocusItemId));
     dispatch(deleteListItemAndChildren());
   }

@@ -33,6 +33,7 @@ const AccountMenu = (props) => {
       content: newListName,
       childrenIds: [],
       rootItem: true,
+      isCompleted: false,
     });
     // const initialListItem = await setDoc(initialListItemRef, {
     //   listItemVersion: "0.0.1",

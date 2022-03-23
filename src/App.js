@@ -38,40 +38,52 @@ function App() {
     setUser(currentUser);
   });
 
-  useEffect(async () => {
-    if (user) {
+  useEffect(() => {
+    //need to clear everything when user logs out, also go back to original screen, which I think already happens
+    const loadCurrentList = async () => {
       debugger;
       const userInfo = await getDoc(doc(db, "users", user.uid));
       setCurrentList(userInfo.data().currentList);
+    };
+
+    if (user) {
+      loadCurrentList();
     }
   }, [user]);
 
-  useEffect(async () => {
-    //not supposed to make useeffect async? need to watch video
-    debugger;
-    if (currentList) {
-      const q = query(
-        collection(db, "list-items"),
-        where("list", "==", currentList)
-      );
-      const querySnapshot = await getDocs(q);
+  useEffect(() => {
+    const loadListItems = async () => {
       debugger;
-      querySnapshot.forEach((listItem) => {
+      if (currentList) {
+        const q = query(
+          collection(db, "list-items"),
+          where("list", "==", currentList)
+        );
+        const querySnapshot = await getDocs(q);
         debugger;
+        let rootItemId;
+        querySnapshot.forEach((listItem) => {
+          debugger;
 
-        const listItemToInsert = {
-          id: listItem.id,
-          isOpen: listItem.data().isOpen,
-          listItemVersion: listItem.data().listItemVersion,
-          content: listItem.data().content,
-          childrenIds: listItem.data().childrenIds,
-        };
+          const listItemToInsert = {
+            id: listItem.id,
+            isOpen: listItem.data().isOpen,
+            listItemVersion: listItem.data().listItemVersion,
+            content: listItem.data().content,
+            childrenIds: listItem.data().childrenIds,
+            isCompleted: listItem.data().isCompleted,
+          };
 
-        dispatch(insertListItemFromDb(listItemToInsert));
-        if (listItem.data().rootItem) setRootItem(listItem.id);
-        debugger;
-      });
-    }
+          //maybe better to do all at once in the dispatcher
+          dispatch(insertListItemFromDb(listItemToInsert));
+          if (listItem.data().rootItem) rootItemId = listItem.id;
+          debugger;
+        });
+        setRootItem(rootItemId);
+      }
+    };
+
+    loadListItems();
     //for each item, place into reduux
   }, [currentList]);
 
@@ -115,8 +127,12 @@ function App() {
     <div className="App">
       {user ? (
         <>
-          <ActionMenu />
-          <SecondaryMenu userId={user.uid} setCurrentList={setCurrentList} />
+          <ActionMenu currentList={currentList} />
+          <SecondaryMenu
+            userId={user.uid}
+            currentList={currentList}
+            setCurrentList={setCurrentList}
+          />
           {currentList && rootItem && <ListItem listItemId={rootItem} />}
         </>
       ) : (

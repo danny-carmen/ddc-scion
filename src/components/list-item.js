@@ -37,8 +37,7 @@ const ListItem = (props, children) => {
   const shapeElement = useRef(null);
 
   const isOpen = useSelector((state) => {
-    debugger;
-    return state.listItems.listItems[props.listItemId].isOpen;
+    return state?.listItems?.listItems?.[props.listItemId]?.isOpen;
   });
 
   const childrenIds = useSelector((state) => {
@@ -62,10 +61,10 @@ const ListItem = (props, children) => {
     );
   }, [props.parentItemId]);
 
-  const childItems = childrenIds.map((childId, idx) => {
+  const childItems = childrenIds.map((childId) => {
     return (
       <ListItem
-        key={idx}
+        key={childId.id}
         listItemId={childId.id}
         parentItemId={props.listItemId}
         priority={childId.priority}

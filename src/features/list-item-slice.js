@@ -13,7 +13,10 @@ const initialState = {
     content: "",
     childrenIds: [],
     isSelected: false,
+    isCompleted: false,
   },
+  idsToDelete: [],
+  childToRemove: {},
   listItems: {
     // 0: {
     //   actionType: "",
@@ -108,6 +111,10 @@ const initialState = {
 
 //also inputs need to define focused element when tabbed to
 
+//alright, so I'm just plain old not feeling the action overhaul right now, it just seems unpleasant. Is there any other way to send off the update?
+//For now could create the list as an item of state, then use that list to delete, then clear it.
+//Then can do the overhaul once things are hosted and working on mobile
+
 export const listItemSlice = createSlice({
   name: "listItemArray",
   initialState,
@@ -124,17 +131,27 @@ export const listItemSlice = createSlice({
     //remove child should be an action type, rather than going through entire list of items TODO
     removeChild: (state, action) => {
       debugger;
+
+      state.childToRemove = { ...state.childToRemove, childId: action.payload };
       const childIdToRemove = action.payload;
       const keys = Object.keys(state.listItems);
       keys.forEach((key) => {
+        debugger;
         if (
           state.listItems[key].childrenIds.some(
             (childItem) => childItem.id === childIdToRemove
           )
         ) {
+          state.childToRemove = { ...state.childToRemove, parentId: key };
           state.listItems[key].childrenIds = state.listItems[
             key
           ].childrenIds.filter((child) => {
+            if (child.id === childIdToRemove) {
+              state.childToRemove = {
+                ...state.childToRemove,
+                priority: child.priority,
+              };
+            }
             return child.id !== childIdToRemove;
           });
 
@@ -163,19 +180,31 @@ export const listItemSlice = createSlice({
       });
     },
 
+    clearIdsToDelete: (state) => {
+      state.idsToDelete = [];
+    },
+
+    clearChildToRemove: (state) => {
+      state.childToRemove = {};
+    },
+
     deleteListItemAndChildren: (state, action) => {
-      // debugger;
+      debugger;
       let itemsToDelete = [];
       itemsToDelete.push(state.currentFocusItemId);
 
       for (var i = 0; i < itemsToDelete.length; i++) {
-        itemsToDelete.push(...state.listItems[itemsToDelete[i]].childrenIds);
+        state.listItems[itemsToDelete[i]].childrenIds.forEach((child) => {
+          debugger;
+          itemsToDelete.push(child.id);
+        });
       }
 
       itemsToDelete.forEach((item) => {
         delete state.listItems[item];
       });
 
+      state.idsToDelete = itemsToDelete;
       state.currentFocusItemId = null;
     },
 
@@ -184,15 +213,13 @@ export const listItemSlice = createSlice({
         action.payload.content;
     },
 
-    addListItem: (state) => {
-      state.listItems[state.nextId] = state.newListItem;
+    addListItem: (state, action) => {
+      state.listItems[action.payload] = state.newListItem;
 
       state.listItems[state.currentFocusItemId].childrenIds = [
         ...state.listItems[state.currentFocusItemId].childrenIds,
-        { id: state.nextId, priority: 0 },
+        { id: action.payload, priority: 0 },
       ];
-
-      state.nextId += 1; //remove this once getting info from mongoDB
     },
 
     insertListItemFromDb: (state, action) => {
@@ -205,6 +232,7 @@ export const listItemSlice = createSlice({
         content: action.payload.content,
         childrenIds: action.payload.childrenIds,
         isSelected: false,
+        isCompleted: action.payload.isCompleted,
       };
     },
 
@@ -342,6 +370,8 @@ export const {
   setParentItemId,
   setPriority,
   insertListItemFromDb,
+  clearIdsToDelete,
+  clearChildToRemove,
 } = listItemSlice.actions;
 
 export default listItemSlice.reducer;

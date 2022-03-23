@@ -12,6 +12,8 @@ import {
   setFocusItem,
 } from "../features/list-item-slice";
 import * as actionTypes from "../app/actionTypes";
+import { setDoc, doc } from "firebase/firestore";
+import { db } from "../firebase-config";
 
 const ListItemShape = (props) => {
   const dispatch = useDispatch();
@@ -43,16 +45,22 @@ const ListItemShape = (props) => {
     console.log(`List Item ${props.listItemId} shape has loaded`);
   });
 
+  const handleOpenClick = async () => {
+    debugger;
+    dispatch(toggleOpen({ idToModify: props.listItemId, setOpen: !isOpen }));
+    await setDoc(
+      doc(db, "list-items", props.listItemId),
+      { isOpen: !isOpen },
+      { merge: true }
+    );
+  };
+
   return (
     <div
       name="shape"
       ref={props.shapeElement}
       onClick={isFocused ? null : props.handleFocusClick}
-      // onDoubleClick={() => {
-      //   dispatch(
-      //     toggleOpen({ idToModify: props.listItemId, setOpen: !isOpen })
-      //   );
-      // }}
+      onDoubleClick={handleOpenClick}
       className={
         isSelected
           ? "shape shape__selected "
