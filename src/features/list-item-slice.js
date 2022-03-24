@@ -130,13 +130,13 @@ export const listItemSlice = createSlice({
 
     //remove child should be an action type, rather than going through entire list of items TODO
     removeChild: (state, action) => {
-      debugger;
+      // debugger;
 
       state.childToRemove = { ...state.childToRemove, childId: action.payload };
       const childIdToRemove = action.payload;
       const keys = Object.keys(state.listItems);
       keys.forEach((key) => {
-        debugger;
+        // debugger;
         if (
           state.listItems[key].childrenIds.some(
             (childItem) => childItem.id === childIdToRemove
@@ -162,7 +162,7 @@ export const listItemSlice = createSlice({
 
     //set child should probably receive a payload at some point, maybe not, also probably should be called add child
     setChild: (state, action) => {
-      debugger;
+      // debugger;
       state.listItems[state.currentFocusItemId].childrenIds = [
         ...state.listItems[state.currentFocusItemId].childrenIds,
         { id: state.currentSelectedItemId, priority: 0 },
@@ -170,11 +170,11 @@ export const listItemSlice = createSlice({
     },
 
     setPriority: (state, action) => {
-      debugger;
+      // debugger;
       const childItem = state.listItems[action.payload.itemId];
       state.listItems[childItem.parentId].childrenIds.forEach((child) => {
         if (child.id === action.payload.itemId) {
-          debugger;
+          // debugger;
           child.priority = parseFloat(action.payload.newPriority);
         }
       });
@@ -189,13 +189,13 @@ export const listItemSlice = createSlice({
     },
 
     deleteListItemAndChildren: (state, action) => {
-      debugger;
+      // debugger;
       let itemsToDelete = [];
       itemsToDelete.push(state.currentFocusItemId);
 
       for (var i = 0; i < itemsToDelete.length; i++) {
         state.listItems[itemsToDelete[i]].childrenIds.forEach((child) => {
-          debugger;
+          // debugger;
           itemsToDelete.push(child.id);
         });
       }
@@ -223,7 +223,7 @@ export const listItemSlice = createSlice({
     },
 
     insertListItemFromDb: (state, action) => {
-      debugger;
+      // debugger;
       state.listItems[action.payload.id] = {
         listItemVersion: action.payload.listItemVersion,
         // actionType: actionTypes.NEW_LIST_ITEM,
@@ -256,7 +256,7 @@ export const listItemSlice = createSlice({
     },
 
     toggleCompleted: (state, action) => {
-      debugger;
+      // debugger;
       const idToModify =
         action.payload !== null ? action.payload : state.currentFocusItemId;
       state.listItems[idToModify].isCompleted =
@@ -265,7 +265,7 @@ export const listItemSlice = createSlice({
       const listItem = state.listItems[idToModify];
 
       state.listItems[listItem.parentId].childrenIds.forEach((child) => {
-        debugger;
+        // debugger;
         if (child.id === idToModify) child.priority = 0;
       });
     },
@@ -298,7 +298,7 @@ export const listItemSlice = createSlice({
 
     orderChildItems: (state, action) => {
       //order by priority
-      debugger;
+      // debugger;
 
       const childArray = [...state.listItems?.[action.payload]?.childrenIds];
       if (childArray === undefined || childArray.length <= 1) return;
@@ -329,7 +329,7 @@ export const listItemSlice = createSlice({
       });
 
       childrenWithSetPriority.map((childItem) => {
-        debugger;
+        // debugger;
         const newPriority =
           priorityArrayWithoutDuplicates.indexOf(childItem.priority) + 1;
         childItem.priority = newPriority;

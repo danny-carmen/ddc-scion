@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   determineLowestSetPriority,
@@ -7,11 +7,14 @@ import {
   setActionType,
   setPriority,
 } from "../features/list-item-slice";
+import { setDoc, doc } from "firebase/firestore";
 
 import * as actionTypes from "../app/actionTypes";
+import { db } from "../firebase-config";
 
 const EditMenu = (props) => {
   const [selectPriority, setSelectPriority] = useState();
+  const timerRef = useRef();
   const dispatch = useDispatch();
   const currentFocusItemId = useSelector((state) => {
     return state.listItems.currentFocusItemId;
@@ -101,7 +104,17 @@ const EditMenu = (props) => {
     return (
       <div>
         <textarea
-          onChange={(e) => {
+          onChange={async (e) => {
+            clearTimeout(timerRef.current);
+            timerRef.current = setTimeout(async () => {
+              // debugger;
+              await setDoc(
+                doc(db, "list-items", currentFocusItemId),
+                { content: e.target.value },
+                { merge: true }
+              );
+            }, 5000);
+
             dispatch(
               modifyListItemContent({
                 idToModify: currentFocusItemId,

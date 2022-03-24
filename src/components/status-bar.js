@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTimes,
@@ -25,8 +25,17 @@ import {
 } from "../features/list-item-slice";
 import * as actionTypes from "../app/actionTypes";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  setDoc,
+  doc,
+  writeBatch,
+  arrayRemove,
+  arrayUnion,
+} from "firebase/firestore";
+import { db } from "../firebase-config";
 
 const StatusBar = (props) => {
+  const previousPriority = useRef();
   const dispatch = useDispatch();
   const isCompleted = useSelector((state) => {
     return state.listItems.listItems[props.listItemId].isCompleted;
@@ -39,7 +48,7 @@ const StatusBar = (props) => {
   useEffect(() => {
     // debugger;
     if (actionType === actionTypes.ORDER_CHILD_ITEMS) {
-      debugger;
+      // debugger;
       dispatch(orderChildItems(props.listItemId));
     }
     dispatch(
@@ -49,6 +58,39 @@ const StatusBar = (props) => {
       })
     );
   }, [actionType]);
+
+  useEffect(() => {
+    const setPriorityInDb = async () => {
+      const batch = writeBatch(db);
+      debugger;
+      batch.set(
+        doc(db, "list-items", props.parentId),
+        {
+          childrenIds: arrayRemove({
+            id: props.listItemId,
+            priority: previousPriority.current,
+          }),
+        },
+        { merge: true }
+      );
+      batch.set(
+        doc(db, "list-items", props.parentId),
+        {
+          childrenIds: arrayUnion({
+            id: props.listItemId,
+            priority: props.priority,
+          }),
+        },
+        { merge: true }
+      );
+      await batch.commit();
+    };
+    debugger;
+    if (previousPriority.current !== undefined) {
+      setPriorityInDb();
+    }
+    previousPriority.current = props.priority;
+  }, [props.priority]);
 
   return (
     <div className="status-bar-wrapper">
@@ -71,7 +113,7 @@ const Priority = (props) => {
     <Fragment>
       <div
         className={props.hasChildren ? "priority with-children" : "priority"}
-        onClick={props.handleCheckItem}
+        onClick={() => props.handleCheckItem(!props.isCompleted)}
       ></div>
       <div className="priority-text">
         {props.isCompleted ? (

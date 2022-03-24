@@ -46,7 +46,7 @@ const ListItemShape = (props) => {
   });
 
   const handleOpenClick = async () => {
-    debugger;
+    // debugger;
     dispatch(toggleOpen({ idToModify: props.listItemId, setOpen: !isOpen }));
     await setDoc(
       doc(db, "list-items", props.listItemId),

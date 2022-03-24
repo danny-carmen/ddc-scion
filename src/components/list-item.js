@@ -28,6 +28,8 @@ import {
 } from "../features/list-item-slice";
 import StatusBar from "./status-bar";
 import { setMenu } from "../features/menu-slice";
+import { setDoc, doc } from "firebase/firestore";
+import { db } from "../firebase-config";
 
 //need to move line into
 
@@ -47,7 +49,7 @@ const ListItem = (props, children) => {
   useEffect(() => {
     // is this one necessary if we have the action type for it?
     if (childrenIds.length > 0) {
-      debugger;
+      // debugger;
       dispatch(orderChildItems(props.listItemId));
     }
   }, [childrenIds.length]);
@@ -72,7 +74,13 @@ const ListItem = (props, children) => {
     );
   });
 
-  const handleCheckItem = () => {
+  const handleCheckItem = async (isCompleted) => {
+    // debugger;
+    await setDoc(
+      doc(db, "list-items", props.listItemId),
+      { isCompleted: isCompleted },
+      { merge: true }
+    );
     dispatch(toggleCompleted(props.listItemId));
     dispatch(orderChildItems(props.parentItemId));
   };
@@ -102,6 +110,7 @@ const ListItem = (props, children) => {
         handleCheckItem={handleCheckItem}
         hasChildren={childrenIds.length > 0}
         handleFocusClick={handleFocusClick}
+        parentId={props.parentItemId}
         handleOpenClick={() => {
           dispatch(
             toggleOpen({ idToModify: props.listItemId, setOpen: !isOpen })

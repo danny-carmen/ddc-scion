@@ -41,7 +41,7 @@ function App() {
   useEffect(() => {
     //need to clear everything when user logs out, also go back to original screen, which I think already happens
     const loadCurrentList = async () => {
-      debugger;
+      // debugger;
       const userInfo = await getDoc(doc(db, "users", user.uid));
       setCurrentList(userInfo.data().currentList);
     };
@@ -53,17 +53,17 @@ function App() {
 
   useEffect(() => {
     const loadListItems = async () => {
-      debugger;
+      // debugger;
       if (currentList) {
         const q = query(
           collection(db, "list-items"),
           where("list", "==", currentList)
         );
         const querySnapshot = await getDocs(q);
-        debugger;
+        // debugger;
         let rootItemId;
         querySnapshot.forEach((listItem) => {
-          debugger;
+          // debugger;
 
           const listItemToInsert = {
             id: listItem.id,
@@ -77,7 +77,7 @@ function App() {
           //maybe better to do all at once in the dispatcher
           dispatch(insertListItemFromDb(listItemToInsert));
           if (listItem.data().rootItem) rootItemId = listItem.id;
-          debugger;
+          // debugger;
         });
         setRootItem(rootItemId);
       }
@@ -89,19 +89,19 @@ function App() {
 
   const register = async () => {
     try {
-      debugger;
+      // debugger;
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         registerEmail,
         registerPassword
       );
       //create database entry for user
-      debugger;
+      // debugger;
       await setDoc(doc(db, "users", userCredential.user.uid), {
         currentList: "",
       });
 
-      debugger;
+      // debugger;
     } catch (error) {
       console.log(error);
     }

@@ -19,10 +19,10 @@ const AccountMenu = (props) => {
 
   const addNewList = async () => {
     // methods for creating new, updating for all items  // trim the name
-    debugger;
+    // debugger;
     const initialListItemRef = doc(collection(db, "list-items"));
     const newListId = props.userId + "_" + newListName;
-    debugger;
+    // debugger;
 
     const batch = writeBatch(db);
 
@@ -52,7 +52,7 @@ const AccountMenu = (props) => {
     //   name: newListName,
     //   rootItem: initialListItem,
     // });
-    debugger;
+    // debugger;
     batch.set(
       doc(db, "users", props.userId),
       { currentList: newListId },
