@@ -45,9 +45,6 @@ import { db } from "../firebase-config";
 
 const ActionMenu = (props) => {
   let dispatch = useDispatch();
-  useEffect(() => {
-    console.log("The action menu rendered.");
-  });
 
   const {
     currentFocusItemId,

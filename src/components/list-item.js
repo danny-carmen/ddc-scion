@@ -103,7 +103,6 @@ const ListItem = (props, children) => {
 
   function handleFocusClick() {
     dispatch(setFocusItem(props.listItemId));
-    dispatch(setMenu({ tabName: TAB_NAMES.EDIT_LIST_ITEM, noToggle: true }));
     scrollToListItem();
   }
 

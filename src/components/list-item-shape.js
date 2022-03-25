@@ -29,10 +29,6 @@ const ListItemShape = (props) => {
 
   const isFocused = props.listItemId === currentFocusItemId;
 
-  useEffect(() => {
-    console.log(`List Item ${props.listItemId} shape has loaded`);
-  });
-
   const handleOpenClick = async () => {
     dispatch(toggleOpen({ idToModify: props.listItemId, setOpen: !isOpen }));
     await setDoc(
