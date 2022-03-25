@@ -41,7 +41,7 @@ function App() {
   useEffect(() => {
     const loadCurrentList = async () => {
       const userInfo = await getDoc(doc(db, "users", user.uid));
-      setCurrentList(userInfo.data().currentList);
+      setCurrentList(userInfo?.data()?.currentList);
     };
 
     if (user) {
