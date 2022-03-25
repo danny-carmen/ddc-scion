@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setMenu } from "../features/menu-slice";
 
 const IconButton = (props) => {
@@ -23,8 +23,18 @@ const IconButton = (props) => {
     }
   };
 
+  const currentSelectedMenu = useSelector((state) => {
+    return state.menu.currentMenu;
+  });
+
   return (
-    <div className="icon-button">
+    <div
+      className={`${
+        currentSelectedMenu === props.tabName
+          ? "icon-button-selected"
+          : "icon-button"
+      }`}
+    >
       <button
         onClick={() => {
           clickListener();

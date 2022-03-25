@@ -106,14 +106,15 @@ const EditMenu = (props) => {
         <textarea
           onChange={async (e) => {
             clearTimeout(timerRef.current);
+            const newContent = e.target.value;
             timerRef.current = setTimeout(async () => {
-              // debugger;
+              debugger;
               await setDoc(
                 doc(db, "list-items", currentFocusItemId),
-                { content: e.target.value },
+                { content: newContent },
                 { merge: true }
               );
-            }, 5000);
+            }, 10000);
 
             dispatch(
               modifyListItemContent({

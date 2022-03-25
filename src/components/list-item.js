@@ -47,6 +47,15 @@ const ListItem = (props, children) => {
   });
 
   useEffect(() => {
+    const setChildrenInDb = async () => {
+      // debugger;
+      await setDoc(
+        doc(db, "list-items", props.listItemId),
+        { childrenIds: childrenIds },
+        { merge: true }
+      );
+    };
+    setChildrenInDb();
     // is this one necessary if we have the action type for it?
     if (childrenIds.length > 0) {
       // debugger;

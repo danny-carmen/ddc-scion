@@ -316,14 +316,16 @@ body {
 }
 
 .action-menu {
+  position: fixed;
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 60px;
   justify-content: space-evenly;
   left: 0px;
   height: 50vh;
   border-right: solid 1px rgb(75, 75, 75);
   background-color: $dark-gray;
+  z-index: 1;
 }
 
 .secondary-menu {
@@ -368,6 +370,32 @@ body {
   visibility: hidden;
   transform: translateX(75px);
   color: lightgray;
+}
+
+.icon-button-selected {
+  font-size: 1.25rem;
+  display: flex;
+  top: 0;
+  left: 0;
+  align-items: center;
+}
+
+.icon-button-selected button {
+  font-size: 1.25rem;
+  outline: none;
+  border: none;
+  color: $dark-gray;
+  width: 100%;
+  height: 60px;
+  background-color: white;
+}
+
+.icon-button-text {
+  width: max-content;
+  position: absolute;
+  visibility: hidden;
+  transform: translateX(75px);
+  color: $dark-gray;
 }
 
 .icon-button:hover .icon-button-text {

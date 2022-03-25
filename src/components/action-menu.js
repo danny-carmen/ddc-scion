@@ -155,7 +155,7 @@ const ActionMenu = (props) => {
   }
 
   return (
-    <div className="action-menu-wrapper">
+    <>
       <div className="action-menu general-actions">
         <IconButton
           icon={faSearch}
@@ -224,7 +224,7 @@ const ActionMenu = (props) => {
           tabName={TAB_NAMES.ADD_LIST_ITEM}
         />
       </div>
-    </div>
+    </>
   );
 };
 

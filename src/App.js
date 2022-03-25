@@ -137,7 +137,7 @@ function App() {
         </>
       ) : (
         <>
-          <input
+          {/* <input
             placeholder="Register Email"
             onChange={(event) => {
               setRegisterEmail(event.target.value);
@@ -150,7 +150,7 @@ function App() {
               setRegisterPassword(event.target.value);
             }}
           />
-          <button onClick={register}>Register</button>
+          <button onClick={register}>Register</button> */}
 
           <input
             placeholder="Login Email"
