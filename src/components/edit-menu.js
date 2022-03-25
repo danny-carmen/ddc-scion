@@ -104,13 +104,12 @@ const EditMenu = (props) => {
             clearTimeout(timerRef.current);
             const newContent = e.target.value;
             timerRef.current = setTimeout(async () => {
-              debugger;
               await setDoc(
                 doc(db, "list-items", currentFocusItemId),
                 { content: newContent },
                 { merge: true }
               );
-            }, 10000);
+            }, 5000);
 
             dispatch(
               modifyListItemContent({
