@@ -61,14 +61,13 @@ const ActionMenu = (props) => {
 
   useEffect(() => {
     const deleteIdsFromDb = async () => {
-      // debugger;
       if (idsToDelete.length > 0) {
         const batch = writeBatch(db);
-        // debugger;
+
         idsToDelete.forEach((id) => {
           batch.delete(doc(db, "list-items", id));
         });
-        // debugger;
+
         await batch.commit();
 
         dispatch(clearIdsToDelete());
@@ -80,7 +79,6 @@ const ActionMenu = (props) => {
 
   useEffect(() => {
     const removeChildFromDb = async () => {
-      // debugger;
       if (Object.keys(childToRemove).length > 0) {
         await setDoc(
           doc(db, "list-items", childToRemove.parentId),
@@ -103,7 +101,6 @@ const ActionMenu = (props) => {
     const newListItemRef = doc(collection(db, "list-items"));
     const batch = writeBatch(db);
 
-    // debugger;
     batch.set(
       doc(db, "list-items", currentFocusItemId),
       {
@@ -133,14 +130,12 @@ const ActionMenu = (props) => {
   }
 
   function handleMoveListItem() {
-    // debugger;
     dispatch(setSelectedItem());
     dispatch(setMode(actionTypes.MOVE_LIST_ITEM));
   }
 
   useEffect(() => {
     if (currentMode === actionTypes.MOVE_LIST_ITEM) {
-      // debugger;
       dispatch(removeChild(currentSelectedItemId));
       dispatch(orderChildItems(currentFocusItemId));
       dispatch(setChild());
@@ -149,7 +144,6 @@ const ActionMenu = (props) => {
   }, [currentFocusItemId]);
 
   async function handleDeleteListItem() {
-    // debugger;
     dispatch(removeChild(currentFocusItemId));
     dispatch(deleteListItemAndChildren());
   }

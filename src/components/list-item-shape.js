@@ -29,24 +29,11 @@ const ListItemShape = (props) => {
 
   const isFocused = props.listItemId === currentFocusItemId;
 
-  // function handleFocusClick() {
-  //   dispatch(setFocusItem(props.listItemId));
-  //   window.scroll({
-  //     top: 0,
-  //     left: 0,
-  //     behavior: "smooth",
-  //   });
-  //   console.log("Scrolled to Shape!");
-  //   console.log(window.scrollX, window.scrollY);
-  //   //scroll to item
-  // }
-
   useEffect(() => {
     console.log(`List Item ${props.listItemId} shape has loaded`);
   });
 
   const handleOpenClick = async () => {
-    // debugger;
     dispatch(toggleOpen({ idToModify: props.listItemId, setOpen: !isOpen }));
     await setDoc(
       doc(db, "list-items", props.listItemId),

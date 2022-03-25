@@ -48,7 +48,6 @@ const ListItem = (props, children) => {
 
   useEffect(() => {
     const setChildrenInDb = async () => {
-      // debugger;
       await setDoc(
         doc(db, "list-items", props.listItemId),
         { childrenIds: childrenIds },
@@ -58,7 +57,6 @@ const ListItem = (props, children) => {
     setChildrenInDb();
     // is this one necessary if we have the action type for it?
     if (childrenIds.length > 0) {
-      // debugger;
       dispatch(orderChildItems(props.listItemId));
     }
   }, [childrenIds.length]);
@@ -84,7 +82,6 @@ const ListItem = (props, children) => {
   });
 
   const handleCheckItem = async (isCompleted) => {
-    // debugger;
     await setDoc(
       doc(db, "list-items", props.listItemId),
       { isCompleted: isCompleted },

@@ -17,88 +17,7 @@ const initialState = {
   },
   idsToDelete: [],
   childToRemove: {},
-  listItems: {
-    // 0: {
-    //   actionType: "",
-    //   isOpen: true,
-    //   isFocused: false,
-    //   content: "Item 0",
-    //   childrenIds: [
-    //     { id: 1, priority: 0 },
-    //     { id: 2, priority: 1 },
-    //     { id: 3, priority: 1.5 },
-    //     { id: 5, priority: 3 },
-    //     { id: 6, priority: 1 },
-    //     { id: 7, priority: 1 },
-    //   ],
-    //   isSelected: false,
-    //   parentId: null,
-    // },
-    // 1: {
-    //   actionType: "",
-    //   isOpen: false,
-    //   isFocused: false,
-    //   isCompleted: true,
-    //   content: "Item 1",
-    //   childrenIds: [],
-    //   isSelected: false,
-    //   parentId: null,
-    // },
-    // 2: {
-    //   actionType: "",
-    //   isOpen: true,
-    //   isFocused: false,
-    //   content: "Item 2",
-    //   childrenIds: [],
-    //   isSelected: false,
-    //   parentId: null,
-    // },
-    // 3: {
-    //   actionType: "",
-    //   isOpen: true,
-    //   isFocused: false,
-    //   content: "Item 3",
-    //   childrenIds: [{ id: 4, priority: 2 }],
-    //   isSelected: false,
-    //   parentId: null,
-    // },
-    // 4: {
-    //   actionType: "",
-    //   isOpen: true,
-    //   isFocused: false,
-    //   content: "Item 4",
-    //   childrenIds: [],
-    //   isSelected: false,
-    //   parentId: null,
-    // },
-    // 5: {
-    //   actionType: "",
-    //   isOpen: true,
-    //   isFocused: false,
-    //   content: "Item 5",
-    //   childrenIds: [],
-    //   isSelected: false,
-    //   parentId: null,
-    // },
-    // 6: {
-    //   actionType: "",
-    //   isOpen: true,
-    //   isFocused: false,
-    //   content: "Item 6",
-    //   childrenIds: [],
-    //   isSelected: false,
-    //   parentId: null,
-    // },
-    // 7: {
-    //   actionType: "",
-    //   isOpen: true,
-    //   isFocused: false,
-    //   content: "Item 7",
-    //   childrenIds: [],
-    //   isSelected: false,
-    //   parentId: null,
-    // },
-  },
+  listItems: {},
 };
 
 //need to prevent deleting main root node
@@ -120,7 +39,6 @@ export const listItemSlice = createSlice({
   initialState,
   reducers: {
     setActionType: (state, action) => {
-      // debugger;
       state.listItems[
         action.payload.idToModify !== null
           ? action.payload.idToModify
@@ -130,13 +48,10 @@ export const listItemSlice = createSlice({
 
     //remove child should be an action type, rather than going through entire list of items TODO
     removeChild: (state, action) => {
-      // debugger;
-
       state.childToRemove = { ...state.childToRemove, childId: action.payload };
       const childIdToRemove = action.payload;
       const keys = Object.keys(state.listItems);
       keys.forEach((key) => {
-        // debugger;
         if (
           state.listItems[key].childrenIds.some(
             (childItem) => childItem.id === childIdToRemove
@@ -162,7 +77,6 @@ export const listItemSlice = createSlice({
 
     //set child should probably receive a payload at some point, maybe not, also probably should be called add child
     setChild: (state, action) => {
-      // debugger;
       state.listItems[state.currentFocusItemId].childrenIds = [
         ...state.listItems[state.currentFocusItemId].childrenIds,
         { id: state.currentSelectedItemId, priority: 0 },
@@ -170,11 +84,9 @@ export const listItemSlice = createSlice({
     },
 
     setPriority: (state, action) => {
-      // debugger;
       const childItem = state.listItems[action.payload.itemId];
       state.listItems[childItem.parentId].childrenIds.forEach((child) => {
         if (child.id === action.payload.itemId) {
-          // debugger;
           child.priority = parseFloat(action.payload.newPriority);
         }
       });
@@ -189,13 +101,11 @@ export const listItemSlice = createSlice({
     },
 
     deleteListItemAndChildren: (state, action) => {
-      // debugger;
       let itemsToDelete = [];
       itemsToDelete.push(state.currentFocusItemId);
 
       for (var i = 0; i < itemsToDelete.length; i++) {
         state.listItems[itemsToDelete[i]].childrenIds.forEach((child) => {
-          // debugger;
           itemsToDelete.push(child.id);
         });
       }
@@ -223,7 +133,6 @@ export const listItemSlice = createSlice({
     },
 
     insertListItemFromDb: (state, action) => {
-      // debugger;
       state.listItems[action.payload.id] = {
         listItemVersion: action.payload.listItemVersion,
         // actionType: actionTypes.NEW_LIST_ITEM,
@@ -241,7 +150,7 @@ export const listItemSlice = createSlice({
       //set actiontype to remove child from parent of selected item
       //set focused item to be parent of selected item
       //set selecteditem to be focused item, way to move to
-      // debugger;
+
       state.listItems[state.currentSelectedItemId].isSelected = false;
       state.currentSelectedItemId = null;
       state.currentMode = null;
@@ -256,7 +165,6 @@ export const listItemSlice = createSlice({
     },
 
     toggleCompleted: (state, action) => {
-      // debugger;
       const idToModify =
         action.payload !== null ? action.payload : state.currentFocusItemId;
       state.listItems[idToModify].isCompleted =
@@ -265,7 +173,6 @@ export const listItemSlice = createSlice({
       const listItem = state.listItems[idToModify];
 
       state.listItems[listItem.parentId].childrenIds.forEach((child) => {
-        // debugger;
         if (child.id === idToModify) child.priority = 0;
       });
     },
@@ -297,9 +204,6 @@ export const listItemSlice = createSlice({
     },
 
     orderChildItems: (state, action) => {
-      //order by priority
-      // debugger;
-
       const childArray = [...state.listItems?.[action.payload]?.childrenIds];
       if (childArray === undefined || childArray.length <= 1) return;
       const childrenWithoutSetPriority = childArray.filter((childItem) => {
@@ -329,7 +233,6 @@ export const listItemSlice = createSlice({
       });
 
       childrenWithSetPriority.map((childItem) => {
-        // debugger;
         const newPriority =
           priorityArrayWithoutDuplicates.indexOf(childItem.priority) + 1;
         childItem.priority = newPriority;

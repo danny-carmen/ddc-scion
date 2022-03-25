@@ -35,9 +35,8 @@ const EditMenu = (props) => {
   useEffect(() => {
     setSelectPriority(itemPriority);
   }, [itemPriority]);
-  //   debugger;
+
   const lowestSetPriority = useSelector((state) => {
-    //  debugger;
     const parentId = state.listItems.listItems?.[currentFocusItemId]?.parentId;
     if (parentId === null || parentId === undefined) return 0;
     const childItems = [...state.listItems.listItems[parentId].childrenIds];
@@ -58,7 +57,6 @@ const EditMenu = (props) => {
   });
 
   const handlePriorityChange = (e) => {
-    //  debugger;
     dispatch(
       setPriority({ itemId: currentFocusItemId, newPriority: e.target.value })
     );
@@ -76,10 +74,8 @@ const EditMenu = (props) => {
       { value: 0, text: "No priority" },
       { value: 0.5, text: "Before 1" },
     ];
-    //  debugger;
 
     [...Array(Math.ceil(lowestSetPriority) + 1)].forEach((_, priority) => {
-      // debugger;
       if (priority === 0) return;
       priorities.push({ value: priority, text: `${priority}` });
       if (priority !== lowestSetPriority) {

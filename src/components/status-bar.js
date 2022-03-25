@@ -46,9 +46,7 @@ const StatusBar = (props) => {
   });
 
   useEffect(() => {
-    // debugger;
     if (actionType === actionTypes.ORDER_CHILD_ITEMS) {
-      // debugger;
       dispatch(orderChildItems(props.listItemId));
     }
     dispatch(
@@ -62,7 +60,6 @@ const StatusBar = (props) => {
   useEffect(() => {
     const setPriorityInDb = async () => {
       const batch = writeBatch(db);
-      // debugger;
       batch.set(
         doc(db, "list-items", props.parentId),
         {
@@ -85,7 +82,6 @@ const StatusBar = (props) => {
       );
       await batch.commit();
     };
-    // debugger;
     if (previousPriority.current !== undefined) {
       //also check if new priority is an integer
       setPriorityInDb();
