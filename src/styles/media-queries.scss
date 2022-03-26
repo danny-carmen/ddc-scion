@@ -22,4 +22,8 @@
     width: 100vw;
     height: calc(100vh - 120px);
   }
+
+  .icon-button:hover .icon-button-text {
+    visibility: hidden;
+  }
 }
