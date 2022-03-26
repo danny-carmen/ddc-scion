@@ -42,8 +42,12 @@ const ListItem = (props, children) => {
     return state?.listItems?.listItems?.[props.listItemId]?.isOpen;
   });
 
+  const listItemVersion = useSelector((state) => {
+    return state?.listItems?.listItems?.[props.listItemId]?.listItemVersion;
+  });
+
   const childrenIds = useSelector((state) => {
-    return state.listItems.listItems[props.listItemId].childrenIds;
+    return state?.listItems?.listItems?.[props.listItemId]?.childrenIds;
   });
 
   useEffect(() => {
@@ -56,30 +60,36 @@ const ListItem = (props, children) => {
     };
     setChildrenInDb();
     // is this one necessary if we have the action type for it?
-    if (childrenIds.length > 0) {
+    if (childrenIds?.length > 0) {
       dispatch(orderChildItems(props.listItemId));
     }
-  }, [childrenIds.length]);
+  }, [childrenIds?.length]);
 
   useEffect(() => {
-    dispatch(
-      setParentItemId({
-        childId: props.listItemId,
-        parentId: props.parentItemId,
-      })
-    );
+    if (props.parentItemId && props.listItemId) {
+      dispatch(
+        setParentItemId({
+          childId: props.listItemId,
+          parentId: props.parentItemId,
+        })
+      );
+    }
   }, [props.parentItemId]);
 
-  const childItems = childrenIds.map((childId) => {
-    return (
-      <ListItem
-        key={childId.id}
-        listItemId={childId.id}
-        parentItemId={props.listItemId}
-        priority={childId.priority}
-      />
-    );
-  });
+  let childItems = null;
+  if (childrenIds) {
+    childItems = childrenIds.map((childId) => {
+      debugger;
+      return (
+        <ListItem
+          key={childId.id}
+          listItemId={childId.id}
+          parentItemId={props.listItemId}
+          priority={childId.priority}
+        />
+      );
+    });
+  }
 
   const handleCheckItem = async (isCompleted) => {
     await setDoc(
@@ -95,48 +105,54 @@ const ListItem = (props, children) => {
     if (shapeElement.current) {
       window.scrollTo({
         top: shapeElement.current.offsetTop - 150,
-        left: shapeElement.current.offsetLeft - window.innerWidth / 2 + 150,
+        left:
+          shapeElement.current.offsetLeft -
+          window.innerWidth / 2 +
+          shapeElement.current.width,
         behavior: "smooth",
       });
     }
   }
 
-  function handleFocusClick() {
+  function handleFocusClick(scrollToItem = false) {
     dispatch(setFocusItem(props.listItemId));
-    scrollToListItem();
+    if (scrollToListItem) scrollToListItem();
   }
+  if (listItemVersion) {
+    return (
+      <div className="container">
+        <StatusBar
+          isOpen={isOpen}
+          priority={props.priority}
+          listItemId={props.listItemId}
+          handleCheckItem={handleCheckItem}
+          hasChildren={childrenIds?.length > 0}
+          handleFocusClick={handleFocusClick}
+          parentId={props.parentItemId}
+          handleOpenClick={() => {
+            dispatch(
+              toggleOpen({ idToModify: props.listItemId, setOpen: !isOpen })
+            );
+          }}
+        />
+        <ListItemShape
+          shapeElement={shapeElement}
+          listItemId={props.listItemId}
+          handleFocusClick={handleFocusClick}
+        />
 
-  return (
-    <div className="container">
-      <StatusBar
-        isOpen={isOpen}
-        priority={props.priority}
-        listItemId={props.listItemId}
-        handleCheckItem={handleCheckItem}
-        hasChildren={childrenIds.length > 0}
-        handleFocusClick={handleFocusClick}
-        parentId={props.parentItemId}
-        handleOpenClick={() => {
-          dispatch(
-            toggleOpen({ idToModify: props.listItemId, setOpen: !isOpen })
-          );
-        }}
-      />
-      <ListItemShape
-        shapeElement={shapeElement}
-        listItemId={props.listItemId}
-        handleFocusClick={handleFocusClick}
-      />
-
-      <div
-        className={
-          isOpen ? "item-rows item-rows__open" : "item-rows item-rows__closed"
-        }
-      >
-        {isOpen ? childItems : null}
+        <div
+          className={
+            isOpen ? "item-rows item-rows__open" : "item-rows item-rows__closed"
+          }
+        >
+          {isOpen ? childItems : null}
+        </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    return null;
+  }
 };
 
 export default ListItem;

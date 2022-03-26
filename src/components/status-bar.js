@@ -38,11 +38,11 @@ const StatusBar = (props) => {
   const previousPriority = useRef();
   const dispatch = useDispatch();
   const isCompleted = useSelector((state) => {
-    return state.listItems.listItems[props.listItemId].isCompleted;
+    return state.listItems.listItems[props.listItemId]?.isCompleted;
   });
 
   const actionType = useSelector((state) => {
-    return state.listItems.listItems[props.listItemId].actionType;
+    return state.listItems.listItems[props.listItemId]?.actionType;
   });
 
   useEffect(() => {
@@ -98,7 +98,11 @@ const StatusBar = (props) => {
         hasChildren={props.hasChildren}
       />
       {props.isOpen && props.hasChildren ? (
-        <ChildLine handleFocusClick={props.handleFocusClick} />
+        <ChildLine
+          handleFocusClick={() => {
+            props.handleFocusClick(true);
+          }}
+        />
       ) : null}
     </div>
   );

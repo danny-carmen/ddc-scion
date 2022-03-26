@@ -35,10 +35,14 @@ const AccountMenu = (props) => {
       isCompleted: false,
     });
 
-    batch.set(doc(db, "lists", newListId), {
-      user: props.userId,
-      name: newListName,
-    });
+    batch.set(
+      doc(db, "lists", newListId),
+      {
+        user: props.userId,
+        name: newListName,
+      },
+      { merge: true }
+    );
 
     batch.set(
       doc(db, "users", props.userId),

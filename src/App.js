@@ -88,9 +88,13 @@ function App() {
         registerPassword
       );
 
-      await setDoc(doc(db, "users", userCredential.user.uid), {
-        currentList: "",
-      });
+      await setDoc(
+        doc(db, "users", userCredential.user.uid),
+        {
+          currentList: "",
+        },
+        { merge: true }
+      );
     } catch (error) {
       console.log(error);
     }
