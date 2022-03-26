@@ -106,14 +106,18 @@ const ActionMenu = (props) => {
       },
       { merge: true }
     );
-    batch.set(newListItemRef, {
-      listItemVersion: "0.0.1",
-      list: props.currentList,
-      isOpen: true,
-      content: "",
-      childrenIds: [],
-      isCompleted: false,
-    });
+    batch.set(
+      newListItemRef,
+      {
+        listItemVersion: "0.0.1",
+        list: props.currentList,
+        isOpen: true,
+        content: "",
+        childrenIds: [],
+        isCompleted: false,
+      },
+      { merge: true }
+    );
 
     await batch.commit();
 

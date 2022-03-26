@@ -19,7 +19,7 @@ const ListItemShape = (props) => {
   const dispatch = useDispatch();
   const { isOpen, content, childrenIds, actionType, isSelected } = useSelector(
     (state) => {
-      return state.listItems.listItems[props.listItemId];
+      return state?.listItems?.listItems?.[props.listItemId];
     }
   );
   const { currentFocusItemId } = useSelector((state) => {
