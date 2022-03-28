@@ -28,7 +28,7 @@ import {
 } from "../features/list-item-slice";
 import StatusBar from "./status-bar";
 import { setMenu } from "../features/menu-slice";
-import { setDoc, doc } from "firebase/firestore";
+import { updateDoc, doc } from "firebase/firestore";
 import { db } from "../firebase-config";
 
 //need to move line into
@@ -52,11 +52,9 @@ const ListItem = (props, children) => {
 
   useEffect(() => {
     const setChildrenInDb = async () => {
-      await setDoc(
-        doc(db, "list-items", props.listItemId),
-        { childrenIds: childrenIds },
-        { merge: true }
-      );
+      await updateDoc(doc(db, "list-items", props.listItemId), {
+        childrenIds: childrenIds,
+      });
     };
     setChildrenInDb();
     // is this one necessary if we have the action type for it?
@@ -79,7 +77,6 @@ const ListItem = (props, children) => {
   let childItems = null;
   if (childrenIds) {
     childItems = childrenIds.map((childId) => {
-      debugger;
       return (
         <ListItem
           key={childId.id}
@@ -92,11 +89,9 @@ const ListItem = (props, children) => {
   }
 
   const handleCheckItem = async (isCompleted) => {
-    await setDoc(
-      doc(db, "list-items", props.listItemId),
-      { isCompleted: isCompleted },
-      { merge: true }
-    );
+    await updateDoc(doc(db, "list-items", props.listItemId), {
+      isCompleted: isCompleted,
+    });
     dispatch(toggleCompleted(props.listItemId));
     dispatch(orderChildItems(props.parentItemId));
   };
@@ -108,15 +103,16 @@ const ListItem = (props, children) => {
         left:
           shapeElement.current.offsetLeft -
           window.innerWidth / 2 +
-          shapeElement.current.width,
+          shapeElement.current.offsetWidth / 2 -
+          10,
         behavior: "smooth",
       });
     }
   }
 
-  function handleFocusClick(scrollToItem = false) {
+  function handleFocusClick(scrollToItem) {
     dispatch(setFocusItem(props.listItemId));
-    if (scrollToListItem) scrollToListItem();
+    if (scrollToItem) scrollToListItem();
   }
   if (listItemVersion) {
     return (

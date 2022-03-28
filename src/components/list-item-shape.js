@@ -12,7 +12,7 @@ import {
   setFocusItem,
 } from "../features/list-item-slice";
 import * as actionTypes from "../app/actionTypes";
-import { setDoc, doc } from "firebase/firestore";
+import { updateDoc, doc } from "firebase/firestore";
 import { db } from "../firebase-config";
 
 const ListItemShape = (props) => {
@@ -31,18 +31,22 @@ const ListItemShape = (props) => {
 
   const handleOpenClick = async () => {
     dispatch(toggleOpen({ idToModify: props.listItemId, setOpen: !isOpen }));
-    await setDoc(
-      doc(db, "list-items", props.listItemId),
-      { isOpen: !isOpen },
-      { merge: true }
-    );
+    await updateDoc(doc(db, "list-items", props.listItemId), {
+      isOpen: !isOpen,
+    });
   };
 
   return (
     <div
       name="shape"
       ref={props.shapeElement}
-      onClick={isFocused ? null : props.handleFocusClick}
+      onClick={
+        isFocused
+          ? null
+          : () => {
+              props.handleFocusClick(false);
+            }
+      }
       onDoubleClick={handleOpenClick}
       className={
         isSelected

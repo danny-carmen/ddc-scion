@@ -25,13 +25,7 @@ import {
 } from "../features/list-item-slice";
 import * as actionTypes from "../app/actionTypes";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setDoc,
-  doc,
-  writeBatch,
-  arrayRemove,
-  arrayUnion,
-} from "firebase/firestore";
+import { doc, writeBatch, arrayRemove, arrayUnion } from "firebase/firestore";
 import { db } from "../firebase-config";
 
 const StatusBar = (props) => {
@@ -60,26 +54,18 @@ const StatusBar = (props) => {
   useEffect(() => {
     const setPriorityInDb = async () => {
       const batch = writeBatch(db);
-      batch.set(
-        doc(db, "list-items", props.parentId),
-        {
-          childrenIds: arrayRemove({
-            id: props.listItemId,
-            priority: previousPriority.current,
-          }),
-        },
-        { merge: true }
-      );
-      batch.set(
-        doc(db, "list-items", props.parentId),
-        {
-          childrenIds: arrayUnion({
-            id: props.listItemId,
-            priority: props.priority,
-          }),
-        },
-        { merge: true }
-      );
+      batch.update(doc(db, "list-items", props.parentId), {
+        childrenIds: arrayRemove({
+          id: props.listItemId,
+          priority: previousPriority.current,
+        }),
+      });
+      batch.update(doc(db, "list-items", props.parentId), {
+        childrenIds: arrayUnion({
+          id: props.listItemId,
+          priority: props.priority,
+        }),
+      });
       await batch.commit();
     };
     if (previousPriority.current !== undefined) {
