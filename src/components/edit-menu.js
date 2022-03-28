@@ -7,7 +7,7 @@ import {
   setActionType,
   setPriority,
 } from "../features/list-item-slice";
-import { setDoc, doc } from "firebase/firestore";
+import { updateDoc, doc } from "firebase/firestore";
 
 import * as actionTypes from "../app/actionTypes";
 import { db } from "../firebase-config";
@@ -104,11 +104,9 @@ const EditMenu = (props) => {
             clearTimeout(timerRef.current);
             const newContent = e.target.value;
             timerRef.current = setTimeout(async () => {
-              await setDoc(
-                doc(db, "list-items", currentFocusItemId),
-                { content: newContent },
-                { merge: true }
-              );
+              await updateDoc(doc(db, "list-items", currentFocusItemId), {
+                content: newContent,
+              });
             }, 5000);
 
             dispatch(

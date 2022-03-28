@@ -33,12 +33,11 @@ import IconButton from "./icon-button";
 import * as TAB_NAMES from "../app/tabNames";
 import { setMenu } from "../features/menu-slice";
 import {
-  addDoc,
+  updateDoc,
   doc,
   collection,
   writeBatch,
   arrayUnion,
-  setDoc,
   arrayRemove,
 } from "firebase/firestore";
 import { db } from "../firebase-config";
@@ -77,16 +76,12 @@ const ActionMenu = (props) => {
   useEffect(() => {
     const removeChildFromDb = async () => {
       if (Object.keys(childToRemove).length > 0) {
-        await setDoc(
-          doc(db, "list-items", childToRemove.parentId),
-          {
-            childrenIds: arrayRemove({
-              id: childToRemove.childId,
-              priority: childToRemove.priority,
-            }),
-          },
-          { merge: true }
-        );
+        await updateDoc(doc(db, "list-items", childToRemove.parentId), {
+          childrenIds: arrayRemove({
+            id: childToRemove.childId,
+            priority: childToRemove.priority,
+          }),
+        });
         dispatch(clearChildToRemove());
       }
     };
@@ -98,14 +93,10 @@ const ActionMenu = (props) => {
     const newListItemRef = doc(collection(db, "list-items"));
     const batch = writeBatch(db);
 
-    batch.set(
-      doc(db, "list-items", currentFocusItemId),
-      {
-        isOpen: true,
-        childrenIds: arrayUnion({ id: newListItemRef.id, priority: 0 }),
-      },
-      { merge: true }
-    );
+    batch.update(doc(db, "list-items", currentFocusItemId), {
+      isOpen: true,
+      childrenIds: arrayUnion({ id: newListItemRef.id, priority: 0 }),
+    });
     batch.set(
       newListItemRef,
       {

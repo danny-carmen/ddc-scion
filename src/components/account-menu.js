@@ -1,14 +1,7 @@
 import React, { useState } from "react";
 import { auth, db } from "../firebase-config";
 import { signOut } from "firebase/auth";
-import {
-  doc,
-  setDoc,
-  getDoc,
-  addDoc,
-  collection,
-  writeBatch,
-} from "firebase/firestore";
+import { doc, collection, writeBatch } from "firebase/firestore";
 
 const logout = async () => {
   await signOut(auth);
