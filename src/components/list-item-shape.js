@@ -47,7 +47,10 @@ const ListItemShape = (props) => {
               props.handleFocusClick(false);
             }
       }
-      onDoubleClick={handleOpenClick}
+      onDoubleClick={() => {
+        handleOpenClick();
+        props.handleFocusClick(true);
+      }}
       className={
         isSelected
           ? "shape shape__selected "

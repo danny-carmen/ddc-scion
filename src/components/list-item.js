@@ -104,7 +104,7 @@ const ListItem = (props, children) => {
           shapeElement.current.offsetLeft -
           window.innerWidth / 2 +
           shapeElement.current.offsetWidth / 2 -
-          10,
+          40,
         behavior: "smooth",
       });
     }
