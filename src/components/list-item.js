@@ -99,12 +99,12 @@ const ListItem = (props, children) => {
   function scrollToListItem() {
     if (shapeElement.current) {
       window.scrollTo({
-        top: shapeElement.current.offsetTop - 150,
+        top: shapeElement.current.offsetTop - 140,
         left:
           shapeElement.current.offsetLeft -
           window.innerWidth / 2 +
           shapeElement.current.offsetWidth / 2 -
-          40,
+          20,
         behavior: "smooth",
       });
     }
