@@ -3,16 +3,16 @@ $min-item-height: 60px;
 
 body {
   margin: 0px;
-  height: 100vh;
-  width: 100vw;
+  height: max-content;
+  width: max-content;
   display: flex;
   justify-content: left;
 
   align-items: flex-start;
-  padding-left: 50vw;
+  padding-left: 60vw;
   padding-top: 50vh;
-  padding-right: 70vw;
-  padding-bottom: 120vh;
+  padding-right: 100vw;
+  padding-bottom: 70vh;
   background-color: $dark-gray;
   overflow-y: scroll;
   overflow-x: scroll;
@@ -324,7 +324,7 @@ body {
   height: 50vh;
   border-right: solid 1px rgb(75, 75, 75);
   background-color: $dark-gray;
-  z-index: 1;
+  z-index: 3;
 }
 
 .secondary-menu {

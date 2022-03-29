@@ -124,7 +124,9 @@ function App() {
             currentList={currentList}
             setCurrentList={setCurrentList}
           />
-          {currentList && rootItem && <ListItem listItemId={rootItem} />}
+          {currentList && rootItem && (
+            <ListItem className="root-item" listItemId={rootItem} />
+          )}
         </>
       ) : (
         <>
